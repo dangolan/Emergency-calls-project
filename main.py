@@ -7,18 +7,30 @@ from views.eventDetailsView import EventDetailsView
 from views.closestVolunteersView import ClosestVolunteersView
 from views.shellView import ShellView
 from controllers.shellController import ShellController
+from views.newEventsView import NewEventsView
+from controllers.eventsController import EventsController
 
 def main():
+
     app = QApplication(sys.argv)
 
+    # Create a map view
     mapView = MapView()
+    # Create an event list view
     eventsListView = EventListView()
+    # Create a volunteers list view
     volunteersListView = VolunteersListView()
+    # Create an event details view
     eventsDetailView = EventDetailsView()
+    # Create a closest volunteers view
     closestVolunteerView = ClosestVolunteersView()
+    # Create a View for showing new events
+    newEventsView = NewEventsView()
 
-    shellView = ShellView(mapView, eventsListView, volunteersListView, eventsDetailView, closestVolunteerView)
+    shellView = ShellView(mapView, eventsListView, volunteersListView, eventsDetailView, closestVolunteerView, newEventsView)
     ShellController(shellView)
+    EventsController(eventsDetailView, eventsListView,closestVolunteerView, newEventsView)
+
 
     shellView.show()
 

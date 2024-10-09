@@ -9,7 +9,7 @@ class ShellView(QMainWindow):
     showEventsClicked = Signal()
     showVolunteersClicked = Signal()
 
-    def __init__(self, mapView, eventsListView, volunteersListView, eventsDetailView, closestVolunteerView):
+    def __init__(self, mapView, eventsListView, volunteersListView, eventsDetailView, closestVolunteerView, newEventsView):
         super().__init__()
 
 
@@ -19,13 +19,13 @@ class ShellView(QMainWindow):
         main_layout = QGridLayout(central_widget)
 
         # Set geometry
-        self.setGeometry(100, 100, 800, 600)
+        self.setGeometry(100, 100, 900, 700)
 
         #add a tool bar
         self.toolbar = self.addToolBar("Main")
 
         self.toolbar.setMovable(False)
-        self.toolbar.setFixedHeight(50)
+        self.toolbar.setFixedHeight(60)
         self.toolbar.setStyleSheet("background-color: black;")
 
         label = QLabel("tool bar")
@@ -43,20 +43,13 @@ class ShellView(QMainWindow):
         self.showEventsButton.setStyleSheet("background-color: lightblue; color: black;")
         self.showVolunteersButton.setStyleSheet("background-color: lightgreen; color: black;")
 
-
-
-        #add label of number of events to the grid layout
-        self.numberOfEventsLabel = QLabel("New Events: 0")
-        self.numberOfEventsLabel.setStyleSheet("font-size: 12px; color: white;")
-        self.numberOfEventsLabel.setAlignment(Qt.AlignCenter)
-        main_layout.addWidget(self.numberOfEventsLabel, 1, 0, 1, 2)
-        
-        #add the side bar view to the grid layout
-        #main_layout.addWidget(self.sideBarView, 0, 0, 1, 2)
+        # Create a label to display the number of events
+        self.newEventsView = newEventsView
+        main_layout.addWidget(self.newEventsView, 0, 0, 1, 2)
 
         #add a button to the main layout
-        main_layout.addWidget(self.showEventsButton, 0, 0, 1, 1)
-        main_layout.addWidget(self.showVolunteersButton, 0, 1, 1, 1)
+        main_layout.addWidget(self.showEventsButton, 1, 0, 1, 2)
+        main_layout.addWidget(self.showVolunteersButton, 2, 0, 1, 2)
 
         # Add the events list view (connect with the sidebar later)
         self.eventsListView = eventsListView
@@ -81,7 +74,7 @@ class ShellView(QMainWindow):
 
         # Add the closest volunteer view (connect with the map later)
         self.closestVolunteerView = closestVolunteerView
-        main_layout.addWidget(self.closestVolunteerView, 2, 0, 4, 2)
+        main_layout.addWidget(self.closestVolunteerView, 3, 0, 3, 2)
 
 
         #add a status bar

@@ -1,0 +1,16 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment folder
+venv/
+
+# IDE specific files
+.idea/
+*.swp
+*.swo
+*.DS_Store
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/

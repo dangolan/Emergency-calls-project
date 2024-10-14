@@ -12,7 +12,6 @@ class ShellView(QMainWindow):
     def __init__(self, mapView, eventsListView, volunteersListView, eventsDetailView, closestVolunteerView, newEventsView):
         super().__init__()
 
-
         # Create the main grid layout for the window
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -66,16 +65,13 @@ class ShellView(QMainWindow):
         self.eventsListView.hide()
         self.volunteersListView.hide()
 
-
         # Add the event detail view
         self.eventsDetailView = eventsDetailView
         main_layout.addWidget(self.eventsDetailView, 4, 2, 2, 4)
 
-
         # Add the closest volunteer view (connect with the map later)
         self.closestVolunteerView = closestVolunteerView
         main_layout.addWidget(self.closestVolunteerView, 3, 0, 3, 2)
-
 
         #add a status bar
         self.statusBar = self.statusBar()

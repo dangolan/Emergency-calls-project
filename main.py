@@ -26,8 +26,10 @@ def main():
     closestVolunteerView = ClosestVolunteersView()
     # Create a View for showing new events
     newEventsView = NewEventsView()
-
+    # Create a shell view
     shellView = ShellView(mapView, eventsListView, volunteersListView, eventsDetailView, closestVolunteerView, newEventsView)
+
+    # Create controllers
     ShellController(shellView)
     EventsController(eventsDetailView, eventsListView,closestVolunteerView, newEventsView)
 

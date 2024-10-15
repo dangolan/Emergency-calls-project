@@ -28,20 +28,47 @@ class ShellView(QMainWindow):
     ):
         super().__init__()
 
+        # Initialize the central widget and main layout
+        self.init_central_widget()
+
+        # Initialize the toolbar
+        self.init_toolbar()
+
+        # Initialize the buttons
+        self.init_buttons()
+
+        # Initialize the views
+        self.init_views(
+            mapView,
+            eventsListView,
+            volunteersListView,
+            eventsDetailView,
+            closestVolunteerView,
+            newEventsView,
+        )
+
+        # Initialize the status bar
+        self.init_status_bar()
+        #set stylesheet
+        stylesheet = self.load_stylesheet("views/styles/shell.qss")
+        self.setStyleSheet(stylesheet)
+
+    def init_central_widget(self):
         # Create the main grid layout for the window
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
-        main_layout = QGridLayout(central_widget)
+        self.main_layout = QGridLayout(central_widget)
 
         # Set geometry
-        self.setGeometry(100, 100, 900, 700)
+        self.setGeometry(100, 100, 1000, 850)
 
-        # add a tool bar
+    def init_toolbar(self):
+        # Add a toolbar
         self.toolbar = self.addToolBar("Main")
-
         self.toolbar.setMovable(False)
-        self.toolbar.setFixedHeight(60)
-        self.toolbar.setStyleSheet("background-color: black;")
+        self.toolbar.setFixedHeight(80)
+        stylesheet = self.load_stylesheet("views/styles/toolBar.qss")
+        self.toolbar.setStyleSheet(stylesheet)
 
         # Create a spacer widget to push the back button to the right
         spacer = QWidget()
@@ -50,71 +77,74 @@ class ShellView(QMainWindow):
 
         # Create the Back button
         self.backButton = QPushButton()
-        self.backButton.setIcon(QIcon("images\go_back.png"))  # Set your back arrow icon
+        self.backButton.setIcon(QIcon("images/goBack.png"))  # Set your back arrow icon
         self.backButton.setIconSize(QSize(24, 24))  # Set the icon size
-        self.backButton.setStyleSheet(
-            "background-color: transparent; border: None;"
-        )  # Make the background transparent
-        # Connect the Back button to its signal (you'll define the method to handle the back action)
+        # Connect the Back button to its signal
         self.backButton.clicked.connect(self.goBackClicked.emit)
 
         # Add the Back button to the toolbar
         self.toolbar.addWidget(self.backButton)
 
+    def init_buttons(self):
         # Create the buttons
         self.showEventsButton = QPushButton("Show Events")
+        self.showEventsButton.setObjectName("showEventsButton")
         self.showVolunteersButton = QPushButton("Show Volunteers")
+        self.showVolunteersButton.setObjectName("showVolunteersButton")
 
         # Connect the buttons to their respective signals
         self.showEventsButton.clicked.connect(self.showEventsClicked.emit)
         self.showVolunteersButton.clicked.connect(self.showVolunteersClicked.emit)
 
-        # Set different background colors for the buttons
-        self.showEventsButton.setStyleSheet(
-            "background-color: lightblue; color: black;"
-        )
-        self.showVolunteersButton.setStyleSheet(
-            "background-color: lightgreen; color: black;"
-        )
+        # Add buttons to the main layout
+        self.main_layout.addWidget(self.showEventsButton, 1, 0, 1, 2)
+        self.main_layout.addWidget(self.showVolunteersButton, 2, 0, 1, 2)
 
-        label = QLabel("tool bar")
-        self.toolbar.addWidget(label)
-
+    def init_views(
+        self,
+        mapView,
+        eventsListView,
+        volunteersListView,
+        eventsDetailView,
+        closestVolunteerView,
+        newEventsView,
+    ):
         # Create a label to display the number of events
         self.newEventsView = newEventsView
-        main_layout.addWidget(self.newEventsView, 0, 0, 1, 2)
+        self.main_layout.addWidget(self.newEventsView, 0, 0, 1, 2)
 
-        # add a button to the main layout
-        main_layout.addWidget(self.showEventsButton, 1, 0, 1, 2)
-        main_layout.addWidget(self.showVolunteersButton, 2, 0, 1, 2)
-
-        # Add the events list view (connect with the sidebar later)
+        # Add the events list view
         self.eventsListView = eventsListView
-        main_layout.addWidget(self.eventsListView, 0, 2, 6, 4)
+        self.main_layout.addWidget(self.eventsListView, 0, 2, 6, 4)
 
-        # Add the volunteers list view (connect with the sidebar later)
+        # Add the volunteers list view
         self.volunteersListView = volunteersListView
-        main_layout.addWidget(self.volunteersListView, 0, 2, 6, 4)
+        self.main_layout.addWidget(self.volunteersListView, 0, 2, 6, 4)
 
         # Add the map view
         self.mapView = mapView
-        main_layout.addWidget(self.mapView, 0, 2, 4, 4)
+        self.main_layout.addWidget(self.mapView, 0, 2, 4, 4)
 
         self.eventsListView.hide()
         self.volunteersListView.hide()
 
         # Add the event detail view
         self.eventsDetailView = eventsDetailView
-        main_layout.addWidget(self.eventsDetailView, 4, 2, 2, 4)
+        self.main_layout.addWidget(self.eventsDetailView, 4, 2, 2, 4)
 
-        # Add the closest volunteer view (connect with the map later)
+        # Add the closest volunteer view
         self.closestVolunteerView = closestVolunteerView
-        main_layout.addWidget(self.closestVolunteerView, 3, 0, 3, 2)
+        self.main_layout.addWidget(self.closestVolunteerView, 3, 0, 3, 2)
 
-        # add a status bar
+    def init_status_bar(self):
+        # Add a status bar
         self.statusBar = self.statusBar()
         self.statusBar.showMessage("Status bar message")
         self.statusBar.setStyleSheet("background-color: black; color: white;")
+
+    def load_stylesheet(self, filename):
+        with open(filename, "r") as file:
+            return file.read()
 
     def show_events_list(self):
         self.eventsListView.show()

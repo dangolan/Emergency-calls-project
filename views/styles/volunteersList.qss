@@ -1,0 +1,39 @@
+QPushButton#addButton {
+    background-color: #70ff5e;  /* Green background */
+    border-radius: 13px;         /* Full round */
+    max-height: 8px;
+    max-width: 8px;
+    margin-bottom: 4px;
+}
+
+QLineEdit#searchInput {
+    background-color: #f3f3f3;  /* Light grey background */
+    border-radius: 15px;        /* Rounded corners */
+    font-size: 10px;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    color: black;
+    padding: 7px;
+    margin-bottom: 4px;
+    max-width: 300px;
+}
+
+QListWidget {
+    background-color: #303030;  /* Light grey background */
+    padding: 5px;
+    font-size: 14px;
+    border-radius: 5px;
+}
+
+QListWidget::item {
+    background-color: #666666;  /* White background for items */
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+QListWidget::item:selected {
+    background-color: #adadad;  /* Green background for selected items */
+    color: #000000;             /* Black text for selected items */
+}

@@ -6,98 +6,164 @@ from PySide6.QtWidgets import (
     QListWidgetItem,
     QPushButton,
     QHBoxLayout,
+    QMessageBox,
 )
 from PySide6.QtCore import Qt
+from entities.event import Event
+from PySide6.QtCore import Signal
 
 
 class EventListView(QWidget):
+    showEventDetailsClicked = Signal(Event)
+    removeEventClicked = Signal(Event)
+
     def __init__(self):
         super().__init__()
 
-        # Create a layout to center the label
+        # Event list data (e.g., store event names and details)
+        self.eventList = []
+
+        # Initialize UI components
+        self.init_ui()
+
+        # Load custom stylesheet (if exists)
+        self.apply_stylesheet("views/styles/eventList.qss")
+
+        # Populate the event list
+        self.populate_event_list()
+
+    def init_ui(self):
+        # Set up the main layout
         layout = QVBoxLayout()
 
-        # Create the label and center it
-        label = QLabel("Event List View")
-        label.setStyleSheet("font-size: 24px; color: black;")
-        label.setAlignment(Qt.AlignCenter)
-        layout.addWidget(label)
-
-        # Set the background color to white
-        self.setStyleSheet("background-color: white;")
-
-        # Create a QListWidget
+        # Create the QListWidget to hold the event items
         self.list_widget = QListWidget()
 
-        # Add custom items with "Show" and "Remove" buttons
-        for i in range(12):
-            self.add_custom_item(f"Item {i + 1}", f"Details for Item {i + 1}")
-
-        # Add the list widget to the layout
+        # Add the list widget to the main layout
         layout.addWidget(self.list_widget)
-
-        # Add a button to print selected item details
-        self.button = QPushButton("Get Selected Item Details")
-        self.button.clicked.connect(self.print_selected_item)
-        layout.addWidget(self.button)
 
         # Set the layout for the widget
         self.setLayout(layout)
-        self.setWindowTitle("Styled List Example")
+        self.setWindowTitle("Styled Event List")
         self.resize(400, 500)
 
-    def add_custom_item(self, item_name, item_details):
-        # Create a QListWidgetItem
+    def apply_stylesheet(self, filename):
+        stylesheet = self.load_stylesheet(filename)
+        if stylesheet:
+            self.setStyleSheet(stylesheet)
+
+    def load_stylesheet(self, filename):
+        try:
+            with open(filename, "r") as file:
+                return file.read()
+        except FileNotFoundError:
+            print(f"Stylesheet {filename} not found.")
+            return ""
+
+    def populate_event_list(self):
+        # Create a list of Event instances with example data
+        event_data = [
+            Event(i, f"Description {i+1} hsdh ashdfj jasdkjh kjasdhj jasgkjkasg kajshgkglk kajs kajg kajg kfg", f"Location {i+1}", f"Time {i+1}", f"Status {i+1}", None)
+            for i in range(12)
+        ]
+
+        # Add each event to the list using add_custom_item
+        for event in event_data:
+            self.add_custom_item(event)
+
+
+    def add_custom_item(self, event: Event):
+        # Create a QListWidgetItem (this is the container for each row)
         list_item = QListWidgetItem(self.list_widget)
 
-        # Create a custom widget to hold the item label and buttons
-        item_widget = QWidget()
-
-        # Create a horizontal layout for the custom widget
-        item_layout = QHBoxLayout()
-
-        # Create a label for the item name
-        item_label = QLabel(item_name)
-        item_label.setAlignment(Qt.AlignLeft)
-
-        # Create the "Show" button
-        show_button = QPushButton("Show")
-        show_button.clicked.connect(lambda: self.show_item(item_details))
-
-        # Create the "Remove" button
-        remove_button = QPushButton("Remove")
-        remove_button.clicked.connect(lambda: self.remove_item(list_item))
-
-        # Add the label and buttons to the item layout
-        item_layout.addWidget(item_label)
-        item_layout.addWidget(show_button)
-        item_layout.addWidget(remove_button)
-
-        # Set the layout for the custom widget
-        item_widget.setLayout(item_layout)
+        # Create a custom widget using the event instance
+        item_widget = self.create_item_widget(event, list_item)
 
         # Set the size hint of the list item based on the custom widget size
         list_item.setSizeHint(item_widget.sizeHint())
 
-        # Add the custom widget to the list widget's item
+        # Add the custom widget to the QListWidget's item
         self.list_widget.setItemWidget(list_item, item_widget)
 
-    def show_item(self, details):
-        print(f"Showing details: {details}")
+    def create_item_widget(self, event: Event, list_item: QListWidgetItem):
+        # Create a custom widget to hold the item label and buttons
+        item_widget = QWidget()
+        item_widget.setObjectName("customItem")
 
-    def remove_item(self, list_item):
-        # Remove the item from the list
+        # Create a vertical layout for the custom widget to stack labels and buttons
+        item_layout = QVBoxLayout()
+        item_layout.setContentsMargins(5, 5, 5, 5)  # Better spacing
+
+        # Create labels for each attribute of the event
+        id_label = QLabel(f"ID: {event.id}")
+        description_label = QLabel(f"Description: {event.description}")
+        location_label = QLabel(f"Location: {event.location}")
+        time_label = QLabel(f"Time: {event.time}")
+        status_label = QLabel(f"Status: {event.status}")
+
+        # Align labels
+        id_label.setAlignment(Qt.AlignLeft)
+        description_label.setAlignment(Qt.AlignLeft)
+        location_label.setAlignment(Qt.AlignLeft)
+        time_label.setAlignment(Qt.AlignLeft)
+        status_label.setAlignment(Qt.AlignLeft)
+
+
+        # Create a horizontal layout for the labe
+        label_layout = QHBoxLayout()
+        label_layout.addWidget(id_label)
+        label_layout.addWidget(location_label)
+        label_layout.addWidget(time_label)
+        label_layout.addWidget(status_label)
+
+        descriptionLayout = QHBoxLayout()
+        descriptionLayout.addWidget(description_label)
+
+        # Add the labels to the item layout
+        item_layout.addLayout(label_layout)
+        item_layout.addLayout(descriptionLayout)
+
+
+        # Create a horizontal layout for the buttons
+        button_layout = QHBoxLayout()
+
+        # Create the "Show" button
+        show_button = QPushButton("Show")
+        show_button.clicked.connect(lambda: self.show_item(event))  # Pass event to show_item
+        show_button.setObjectName("showButton")
+
+        # Create the "Remove" button
+        remove_button = QPushButton("Remove")
+        remove_button.clicked.connect(lambda: self.remove_item(list_item, event))  # Pass event to remove_item
+        remove_button.setObjectName("removeButton")
+
+        button_layout.setContentsMargins(5, 5, 5, 5)  # Set margins for the QHBoxLayout
+
+
+        # Add buttons to the button layout
+        button_layout.addWidget(show_button)
+        button_layout.addWidget(remove_button)
+        button_layout.setAlignment(Qt.AlignRight)
+
+        # Add the button layout to the main item layout
+        item_layout.addLayout(button_layout)
+
+        # Set the layout for the custom widget
+        item_widget.setLayout(item_layout)
+
+        return item_widget
+
+    def show_item(self, event: Event):
+        print(f"Showing event details:\n"
+            f"ID: {event.id}\n"
+            f"Description: {event.description}\n"
+            f"Location: {event.location}\n"
+            f"Time: {event.time}\n"
+            f"Status: {event.status}\n")
+        self.showEventDetailsClicked.emit(event)
+        
+    def remove_item(self, list_item, event: Event):
         row = self.list_widget.row(list_item)
         self.list_widget.takeItem(row)
-
-    def print_selected_item(self):
-        # Get the selected item
-        current_item = self.list_widget.currentItem()
-        if current_item:
-            widget = self.list_widget.itemWidget(current_item)
-            if widget:
-                label = widget.findChild(QLabel)
-                if label:
-                    print(f"Selected: {label.text()}")
-        else:
-            print("No item selected.")
+        print(f"Event '{event.description}' has been removed.")
+        self.removeEventClicked.emit(event)

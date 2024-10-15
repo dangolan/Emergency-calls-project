@@ -7,6 +7,8 @@ from PySide6.QtWidgets import (
     QListWidgetItem,
     QPushButton,
     QLineEdit,
+    QSpacerItem,
+    QSizePolicy,
 )
 from PySide6.QtCore import Qt, QSize, Signal
 from PySide6.QtGui import QIcon
@@ -15,40 +17,36 @@ from PySide6.QtGui import QIcon
 class VolunteersListView(QWidget):
     def __init__(self):
         super().__init__()
-        main_layout = QVBoxLayout()
+        # Create the main vertical layout
+        main_layout = QVBoxLayout(self)
 
-        # Create a horizontal layout for the label and the button
+        # Create a horizontal layout for the button and search input
         top_layout = QHBoxLayout()
 
-        # Create the label for the view title
-        label = QLabel("Volunteers List View")
-        label.setStyleSheet("font-size: 24px; color: black;")
-        label.setAlignment(Qt.AlignLeft)
+        # Create a search input field (QLineEdit) for filtering
+        self.searchInput = QLineEdit()
+        self.searchInput.setObjectName("searchInput")
+        self.searchInput.setPlaceholderText("Search for a volunteer...")
+        self.searchInput.textChanged.connect(self.filter_items)
+        top_layout.addWidget(self.searchInput)
 
-        # Add the label to the horizontal layout
-        top_layout.addWidget(label)
 
         # Create a button and add it to the right side of the top layout
-        self.new_button = QPushButton()
-        self.new_button.setIcon(QIcon("images\pluse.png"))  # Set your back arrow icon
-        self.new_button.setIconSize(QSize(24, 24))  # Set the icon size
-        self.new_button.setStyleSheet("background-color: transparent; border: None;")
-        top_layout.addWidget(self.new_button)
+        self.addButton = QPushButton()
+        self.addButton.clicked.connect(self.on_add_button_click)
+        self.addButton.setObjectName("addButton")
+        self.addButton.setIcon(QIcon("images/addBlack.png"))  # Set your add icon
+        top_layout.addWidget(self.addButton)
 
-        # Add some spacing between the label and the button
-        top_layout.addStretch()
+        # Align the horizontal layout to the center
+        top_layout.setAlignment(Qt.AlignCenter)
 
-        # Add the top layout to the main layout
+       
         main_layout.addLayout(top_layout)
 
-        # Create a search input field (QLineEdit) for filtering
-        self.search_input = QLineEdit()
-        self.search_input.setPlaceholderText("Search for a volunteer...")
-        self.search_input.textChanged.connect(self.filter_items)
-        main_layout.addWidget(self.search_input)
+        # Set the main layout as the layout for the widget
+        self.setLayout(main_layout)
 
-        # Set the background color to white
-        self.setStyleSheet("background-color: white;")
 
         # Create a QListWidget to hold the list of volunteers
         self.list_widget = QListWidget()
@@ -63,36 +61,17 @@ class VolunteersListView(QWidget):
             self.list_widget.addItem(item)
             self.items_data.append((item_text, item_details))  # Store text and details
 
-        # Set styles for the list widget
-        self.list_widget.setStyleSheet(
-            """
-            QListWidget {
-                background-color: #f0f0f0;  /* Light gray background */
-                border: 1px solid #cccccc;  /* Light gray border */
-                font-size: 14px;  /* Font size */
-            }
-            QListWidget::item {
-                padding: 30px;  /* Padding for each item */
-                border-bottom: 1px solid #dddddd;  /* Bottom border for each item */
-            }
-            QListWidget::item:selected {
-                background-color: #007BFF;  /* Blue background for selected item */
-                color: white;  /* White text for selected item */
-            }
-        """
-        )
 
         # Add the list widget to the layout
         main_layout.addWidget(self.list_widget)
 
-        # Add a button to print selected item details
-        self.button = QPushButton("Get Selected Item Details")
-        self.button.clicked.connect(self.print_selected_item)
-        main_layout.addWidget(self.button)
 
         self.setLayout(main_layout)
         self.setWindowTitle("Volunteers List with Search")
         self.resize(400, 500)
+
+        stylesheet = self.load_stylesheet("views/styles/volunteersList.qss")
+        self.setStyleSheet(stylesheet)
 
     def print_selected_item(self):
         # Get the selected item
@@ -114,6 +93,10 @@ class VolunteersListView(QWidget):
                 item.setData(Qt.UserRole, item_details)
                 self.list_widget.addItem(item)
 
-    def on_button_click(self):
+    def on_add_button_click(self):
         # Handle button click
-        print("New button clicked!")
+        print("add button clicked!")
+
+    def load_stylesheet(self, filename):
+        with open(filename, "r") as file:
+            return file.read()

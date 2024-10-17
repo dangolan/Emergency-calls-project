@@ -8,23 +8,27 @@ QPushButton {
     margin-right: 10px;
 }
 
-QPushButton#showEventsButton {
-    background-color: #2998ff;  /* Blue background */
+QWidget {
+    font-family: "Arial";
+    font-size: 10pt;  /* Font size in points */
 }
 
+QPushButton#showEventsButton {
+    background-color: #FF3333  /* Blue background */
+}
 QPushButton#showEventsButton:hover {
-    background-color: #aed7fd;  /* Darker blue on hover */
+    background-color: #ff7b7b;  /* Darker blue on hover */
 }
 QPushButton#showVolunteersButton{
-    background-color: #f1f1f1;  /* Blue background */
+    background-color: #FF3333  /* Blue background */
 }
 QPushButton#showVolunteersButton:hover {
-    background-color: #e4e4e4;  /* Darker blue on hover */
+    background-color: #ff7b7b;  /* Darker blue on hover */
 }
 
 QPushButton:pressed {
-    background-color: #ffffff;  /* Green on press */
+    background-color: #333333;  /* Green on press */
 }
 QToolBar {
-    background-color: #2c2c2c;  /* Blue background for the toolbar */
+    background-color: #333333;  /* Blue background for the toolbar */
 }

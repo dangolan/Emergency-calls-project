@@ -17,8 +17,8 @@ QPushButton:hover {
 }
 
 QPushButton:pressed {
-    background-color: #ffffff;  /* Green on press */
+    background-color: #333333;  /* Green on press */
 }
 QToolBar {
-    background-color: #2c2c2c;  /* Blue background for the toolbar */
+    background-color: #785E5F;  /* Blue background for the toolbar */
 }

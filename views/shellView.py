@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
     QSizePolicy,
 )
 from PySide6.QtCore import Signal, QSize
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, QAction, QPixmap, Qt
 
 
 # Define the ShellView class in its own view
@@ -49,7 +49,7 @@ class ShellView(QMainWindow):
 
         # Initialize the status bar
         self.init_status_bar()
-        #set stylesheet
+        # set stylesheet
         stylesheet = self.load_stylesheet("views/styles/shell.qss")
         self.setStyleSheet(stylesheet)
 
@@ -70,6 +70,15 @@ class ShellView(QMainWindow):
         stylesheet = self.load_stylesheet("views/styles/toolBar.qss")
         self.toolbar.setStyleSheet(stylesheet)
 
+        # Create a label to display the logo
+        label = QLabel(self)
+        pixmap = QPixmap("images/logo.png")
+        # Set the pixmap to the label
+        label.setPixmap(pixmap.scaled(QSize(256, 256), Qt.KeepAspectRatio))
+
+        # Add the label (with the image) to the toolbar
+        self.toolbar.addWidget(label)
+
         # Create a spacer widget to push the back button to the right
         spacer = QWidget()
         spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
@@ -78,6 +87,7 @@ class ShellView(QMainWindow):
         # Create the Back button
         self.backButton = QPushButton()
         self.backButton.setIcon(QIcon("images/goBack.png"))  # Set your back arrow icon
+
         self.backButton.setIconSize(QSize(24, 24))  # Set the icon size
         # Connect the Back button to its signal
         self.backButton.clicked.connect(self.goBackClicked.emit)

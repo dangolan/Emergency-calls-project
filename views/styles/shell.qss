@@ -21,7 +21,6 @@ QPushButton#showVolunteersButton{
 QPushButton#showVolunteersButton:hover {
     background-color: #e4e4e4;  /* Darker blue on hover */
 }
-
 QPushButton:pressed {
     background-color: #ffffff;  /* Green on press */
 }

@@ -9,11 +9,11 @@ from views.shellView import ShellView
 from controllers.shellController import ShellController
 from views.newEventsView import NewEventsView
 from controllers.eventsController import EventsController
+from PySide6.QtGui import QIcon
+
 
 def main():
-
     app = QApplication(sys.argv)
-
     # Create a map view
     mapView = MapView()
     # Create an event list view
@@ -27,16 +27,24 @@ def main():
     # Create a View for showing new events
     newEventsView = NewEventsView()
     # Create a shell view
-    shellView = ShellView(mapView, eventsListView, volunteersListView, eventsDetailView, closestVolunteerView, newEventsView)
-
+    shellView = ShellView(
+        mapView,
+        eventsListView,
+        volunteersListView,
+        eventsDetailView,
+        closestVolunteerView,
+        newEventsView,
+    )
     # Create controllers
     ShellController(shellView)
-    EventsController(eventsDetailView, eventsListView,closestVolunteerView, newEventsView)
-
+    EventsController(
+        eventsDetailView, eventsListView, closestVolunteerView, newEventsView
+    )
 
     shellView.show()
 
     app.exec()
+
 
 if __name__ == "__main__":
     main()

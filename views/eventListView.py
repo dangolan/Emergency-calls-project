@@ -63,14 +63,20 @@ class EventListView(QWidget):
     def populate_event_list(self):
         # Create a list of Event instances with example data
         event_data = [
-            Event(i, f"Description {i+1} hsdh ashdfj jasdkjh kjasdhj jasgkjkasg kajshgkglk kajs kajg kajg kfg", f"Location {i+1}", f"Time {i+1}", f"Status {i+1}", None)
+            Event(
+                i,
+                f"Description {i+1} hsdh ashdfj jasdkjh kjasdhj jasgkjkasg kajshgkglk kajs kajg kajg kfg",
+                f"Location {i+1}",
+                f"Time {i+1}",
+                f"Status {i+1}",
+                None,
+            )
             for i in range(12)
         ]
 
         # Add each event to the list using add_custom_item
         for event in event_data:
             self.add_custom_item(event)
-
 
     def add_custom_item(self, event: Event):
         # Create a QListWidgetItem (this is the container for each row)
@@ -108,7 +114,6 @@ class EventListView(QWidget):
         time_label.setAlignment(Qt.AlignLeft)
         status_label.setAlignment(Qt.AlignLeft)
 
-
         # Create a horizontal layout for the labe
         label_layout = QHBoxLayout()
         label_layout.addWidget(id_label)
@@ -123,22 +128,26 @@ class EventListView(QWidget):
         item_layout.addLayout(label_layout)
         item_layout.addLayout(descriptionLayout)
 
-
         # Create a horizontal layout for the buttons
         button_layout = QHBoxLayout()
 
         # Create the "Show" button
         show_button = QPushButton("Show")
-        show_button.clicked.connect(lambda: self.show_item(event))  # Pass event to show_item
+        show_button.clicked.connect(
+            lambda: self.show_item(event)
+        )  # Pass event to show_item
         show_button.setObjectName("showButton")
+
+        
 
         # Create the "Remove" button
         remove_button = QPushButton("Remove")
-        remove_button.clicked.connect(lambda: self.remove_item(list_item, event))  # Pass event to remove_item
+        remove_button.clicked.connect(
+            lambda: self.remove_item(list_item, event)
+        )  # Pass event to remove_item
         remove_button.setObjectName("removeButton")
 
         button_layout.setContentsMargins(5, 5, 5, 5)  # Set margins for the QHBoxLayout
-
 
         # Add buttons to the button layout
         button_layout.addWidget(show_button)
@@ -154,14 +163,16 @@ class EventListView(QWidget):
         return item_widget
 
     def show_item(self, event: Event):
-        print(f"Showing event details:\n"
+        print(
+            f"Showing event details:\n"
             f"ID: {event.id}\n"
             f"Description: {event.description}\n"
             f"Location: {event.location}\n"
             f"Time: {event.time}\n"
-            f"Status: {event.status}\n")
+            f"Status: {event.status}\n"
+        )
         self.showEventDetailsClicked.emit(event)
-        
+
     def remove_item(self, list_item, event: Event):
         row = self.list_widget.row(list_item)
         self.list_widget.takeItem(row)

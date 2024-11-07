@@ -140,7 +140,7 @@ class ShellView(QMainWindow):
 
         # Add the event detail view
         self.eventsDetailView = eventsDetailView
-        self.main_layout.addWidget(self.eventsDetailView, 4, 2, 2, 4)
+        self.main_layout.addWidget(self.eventsDetailView, 4, 2, 3, 4)
 
         # Add the closest volunteer view
         self.closestVolunteerView = closestVolunteerView

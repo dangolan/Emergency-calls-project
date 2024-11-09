@@ -1,8 +1,11 @@
+from entities.geoPoint import GeoPoint
+
+
 class Event:
-    def __init__(self,id,description,location,time,status,volunteers):
+    def __init__(self, id, description, latitude, longitude, address, time, status):
         self.id = id
         self.description = description
-        self.location = location
+        self.geoPoint = GeoPoint(latitude, longitude)
+        self.address = address
         self.time = time
         self.status = status
-        self.volunteers = volunteers

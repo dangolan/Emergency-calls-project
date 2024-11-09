@@ -29,9 +29,6 @@ class EventListView(QWidget):
         # Load custom stylesheet (if exists)
         self.apply_stylesheet("views/styles/eventList.qss")
 
-        # Populate the event list
-        self.populate_event_list()
-
     def init_ui(self):
         # Set up the main layout
         layout = QVBoxLayout()
@@ -60,24 +57,6 @@ class EventListView(QWidget):
             print(f"Stylesheet {filename} not found.")
             return ""
 
-    def populate_event_list(self):
-        # Create a list of Event instances with example data
-        event_data = [
-            Event(
-                i,
-                f"Description {i+1} hsdh ashdfj jasdkjh kjasdhj jasgkjkasg kajshgkglk kajs kajg kajg kfg",
-                f"Location {i+1}",
-                f"Time {i+1}",
-                f"Status {i+1}",
-                None,
-            )
-            for i in range(12)
-        ]
-
-        # Add each event to the list using add_custom_item
-        for event in event_data:
-            self.add_custom_item(event)
-
     def add_custom_item(self, event: Event):
         # Create a QListWidgetItem (this is the container for each row)
         list_item = QListWidgetItem(self.list_widget)
@@ -103,21 +82,21 @@ class EventListView(QWidget):
         # Create labels for each attribute of the event
         id_label = QLabel(f"ID: {event.id}")
         description_label = QLabel(f"Description: {event.description}")
-        location_label = QLabel(f"Location: {event.location}")
+        address_label = QLabel(f"Address: {event.address}\n")
         time_label = QLabel(f"Time: {event.time}")
         status_label = QLabel(f"Status: {event.status}")
 
         # Align labels
         id_label.setAlignment(Qt.AlignLeft)
         description_label.setAlignment(Qt.AlignLeft)
-        location_label.setAlignment(Qt.AlignLeft)
+        address_label.setAlignment(Qt.AlignLeft)
         time_label.setAlignment(Qt.AlignLeft)
         status_label.setAlignment(Qt.AlignLeft)
 
         # Create a horizontal layout for the labe
         label_layout = QHBoxLayout()
         label_layout.addWidget(id_label)
-        label_layout.addWidget(location_label)
+        label_layout.addWidget(address_label)
         label_layout.addWidget(time_label)
         label_layout.addWidget(status_label)
 
@@ -137,8 +116,6 @@ class EventListView(QWidget):
             lambda: self.show_item(event)
         )  # Pass event to show_item
         show_button.setObjectName("showButton")
-
-        
 
         # Create the "Remove" button
         remove_button = QPushButton("Remove")
@@ -167,7 +144,7 @@ class EventListView(QWidget):
             f"Showing event details:\n"
             f"ID: {event.id}\n"
             f"Description: {event.description}\n"
-            f"Location: {event.location}\n"
+            f"Address: {event.address}\n"
             f"Time: {event.time}\n"
             f"Status: {event.status}\n"
         )

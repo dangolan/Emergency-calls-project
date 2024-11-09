@@ -1,5 +1,6 @@
 import sys
 from PySide6.QtWidgets import QApplication, QWidget
+from controllers.mapController import MapController
 from views.mapView import MapView
 from views.eventListView import EventListView
 from views.volunteersListView import VolunteersListView
@@ -10,6 +11,7 @@ from controllers.shellController import ShellController
 from views.newEventsView import NewEventsView
 from controllers.eventsController import EventsController
 from PySide6.QtGui import QIcon
+from eventSimulator import EmergencyEventSimulator
 
 
 def main():
@@ -37,9 +39,16 @@ def main():
     )
     # Create controllers
     ShellController(shellView)
-    EventsController(
-        eventsDetailView, eventsListView, closestVolunteerView, newEventsView
+    eventContoller = EventsController(
+        eventsDetailView,
+        eventsListView,
+        closestVolunteerView,
+        newEventsView,
     )
+    MapController(mapView)
+    simulator = EmergencyEventSimulator(6)
+    simulator.add_event.connect(eventContoller.add_event)
+    simulator.start()
 
     shellView.show()
 

@@ -1,34 +1,35 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
-from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel
+from PySide6.QtCore import Qt, Signal
+from entities.event import Event
 
 
 class NewEventsView(QWidget):
+
     def __init__(self):
         super().__init__()
 
-        # Create a layout to center the label
-        layout = QVBoxLayout()
-        label = QLabel()
+        # Initialize label and layout
+        self.layout = QVBoxLayout()
+        self.label = QLabel()
 
-        # Create the label and center it
-        label.setText(
-            "ID: 12345<br>"
-            "Time: 10:00 AM<br>"
-            "Status: Active<br>"
-            "Location: Main Hall<br>"
-            "Description: Event description goes here"
-        )
+        # Set initial text for the label
 
         # Style the label
-        label.setStyleSheet("font-size: 18px; color: black;")
-        label.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        layout.addWidget(label)
+        self.label.setStyleSheet("font-size: 18px; color: black;")
+        self.label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.layout.addWidget(self.label)
 
-        # Set the layout for the widget
-        self.setLayout(layout)
-
-        # Set the background color to white
+        # Set layout and background color
+        self.setLayout(self.layout)
         self.setStyleSheet("background-color: white;")
 
-    def update_label(self, new_text):
+    def update_label(self, event):
+        # Update label with new event details
+        new_text = (
+            f"ID: {event.id}<br>"
+            f"Time: {event.time}<br>"
+            f"Status: {event.status}<br>"
+            f"Location: {event.address}<br>"
+            f"Description: {event.description}"
+        )
         self.label.setText(new_text)

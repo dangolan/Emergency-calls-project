@@ -8,10 +8,6 @@ QPushButton {
     margin-right: 10px;
 }
 
-QWidget {
-    font-family: "Arial";
-    font-size: 10pt;  /* Font size in points */
-}
 
 QPushButton#showEventsButton {
     background-color: #FF3333  /* Blue background */

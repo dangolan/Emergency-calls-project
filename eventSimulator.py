@@ -8,7 +8,7 @@ from entities.event import Event
 class EmergencyEventSimulator(QObject):
     add_event = Signal(Event)
 
-    def __init__(self, interval=6):  # Corrected __init_ method
+    def __init__(self, interval=10000):  # Corrected __init_ method
         super().__init__()
         self.interval = interval
         self.running = False
@@ -20,6 +20,16 @@ class EmergencyEventSimulator(QObject):
             "theft",
             "natural disaster",
         ]
+    def generate_random_coordinates_in_gush_dan(self):
+        # Define the Gush Dan area with its coordinate ranges
+        lat_range = (32.0, 32.3)
+        lon_range = (34.75, 34.85)
+
+        return (
+            random.uniform(lat_range[0], lat_range[1]),  # latitude
+            random.uniform(lon_range[0], lon_range[1])   # longitude
+        )
+
 
     def generate_event(self):
         event_id = random.randint(1000, 9999)
@@ -28,13 +38,7 @@ class EmergencyEventSimulator(QObject):
         status = "Pending"
         description = f"{event_type} reported at {location}"
 
-        # Assuming latitude and longitude for the event, you can replace with actual values
-        latitude = random.uniform(
-            32.0, 32.1
-        )  # Random latitude in the range of Tel Aviv
-        longitude = random.uniform(
-            34.75, 34.85
-        )  # Random longitude in the range of Tel Aviv
+        latitude, longitude = self.generate_random_coordinates_in_gush_dan()
         address = location  # Could be refined with actual address data
 
         event_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())

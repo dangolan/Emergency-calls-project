@@ -13,8 +13,10 @@ from entities.event import Event
 from PySide6.QtCore import Signal
 
 
+
 class EventListView(QWidget):
     showEventDetailsClicked = Signal(Event)
+    showEventClicked = Signal()
     removeEventClicked = Signal(Event)
 
     def __init__(self):
@@ -149,6 +151,7 @@ class EventListView(QWidget):
             f"Status: {event.status}\n"
         )
         self.showEventDetailsClicked.emit(event)
+        self.showEventClicked.emit()
 
     def remove_item(self, list_item, event: Event):
         row = self.list_widget.row(list_item)

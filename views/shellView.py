@@ -133,14 +133,14 @@ class ShellView(QMainWindow):
 
         # Add the map view
         self.mapView = mapView
-        self.main_layout.addWidget(self.mapView, 0, 2, 4, 4)
+        self.main_layout.addWidget(self.mapView, 0, 2, 5, 4)
 
         self.eventsListView.hide()
         self.volunteersListView.hide()
 
         # Add the event detail view
         self.eventsDetailView = eventsDetailView
-        self.main_layout.addWidget(self.eventsDetailView, 4, 2, 3, 4)
+        self.main_layout.addWidget(self.eventsDetailView, 5, 2, 1, 4)
 
         # Add the closest volunteer view
         self.closestVolunteerView = closestVolunteerView

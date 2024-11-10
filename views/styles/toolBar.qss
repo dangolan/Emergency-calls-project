@@ -22,3 +22,12 @@ QPushButton:pressed {
 QToolBar {
     background-color: #785E5F;  /* Blue background for the toolbar */
 }
+QLabel {
+    background-color: #785E5F;  /* Dark background */
+    font-size: 16px;
+    font-weight: bold;
+}
+QWidget {
+    
+    background-color: #785E5F;  /* Dark background */
+}

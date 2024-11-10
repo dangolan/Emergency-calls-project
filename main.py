@@ -1,6 +1,5 @@
 import sys
 from PySide6.QtWidgets import QApplication, QWidget
-from controllers.mapController import MapController
 from views.mapView import MapView
 from views.eventListView import EventListView
 from views.volunteersListView import VolunteersListView
@@ -12,6 +11,11 @@ from views.newEventsView import NewEventsView
 from controllers.eventsController import EventsController
 from PySide6.QtGui import QIcon
 from eventSimulator import EmergencyEventSimulator
+from models.eventsModel import EventsModel
+from models.volunteersModel import VolunteersModel
+import asyncio
+from PySide6.QtCore import QEventLoop
+
 
 
 def main():
@@ -37,22 +41,29 @@ def main():
         closestVolunteerView,
         newEventsView,
     )
+    # Create models
+    eventsModel = EventsModel()
+    volunteersModel = VolunteersModel()
     # Create controllers
-    ShellController(shellView)
+    shellController = ShellController(shellView)
     eventContoller = EventsController(
         eventsDetailView,
         eventsListView,
         closestVolunteerView,
         newEventsView,
+        mapView,
+        eventsModel
     )
-    MapController(mapView)
-    simulator = EmergencyEventSimulator(6)
+
+    eventContoller.add_observer_to_show_event(shellController.show_map_and_event)
+    simulator = EmergencyEventSimulator(5)
     simulator.add_event.connect(eventContoller.add_event)
     simulator.start()
 
     shellView.show()
 
-    app.exec()
+    sys.exit(app.exec())
+    
 
 
 if __name__ == "__main__":

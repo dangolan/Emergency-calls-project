@@ -15,7 +15,7 @@ class NewEventsView(QWidget):
         # Set initial text for the label
 
         # Style the label
-        self.label.setStyleSheet("font-size: 18px; color: black;")
+        self.label.setStyleSheet("font-size: 12px; color: black;")
         self.label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.layout.addWidget(self.label)
 

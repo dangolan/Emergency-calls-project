@@ -21,7 +21,7 @@ class EventDetailsView(QWidget):
         )
 
         # Style the label
-        label.setStyleSheet("font-size: 18px; color: black;")
+        label.setStyleSheet("font-size: 14px; color: black;")
         label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         layout.addWidget(label)
 

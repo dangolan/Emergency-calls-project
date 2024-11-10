@@ -1,0 +1,21 @@
+
+QListWidget {
+    background-color: #383838;  /* Light grey background */
+    padding: 2px;
+    font-size: 12px;
+    border-radius: 5px;
+    color: white;
+}
+
+QListWidget::item {
+    background-color: #656565;  /* White background for items */
+    padding: 2px;
+    margin: 2px;
+    border-radius: 5px;
+}
+QLabel {
+    background-color: #656565;
+}
+QHBoxLayout {
+    background-color: #656565;
+}

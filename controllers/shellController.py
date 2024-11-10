@@ -1,3 +1,5 @@
+
+
 class ShellController:
     def __init__(self, shellView):
         print("ShellController init")
@@ -9,8 +11,6 @@ class ShellController:
         self.shellView.goBackClicked.connect(lambda: self.show_map_and_event())
 
     def show_events_list(self):
-        print("show events list")
-
         self.shellView.show_events_list()
 
     def show_volunteers_list(self):

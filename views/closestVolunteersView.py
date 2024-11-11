@@ -12,7 +12,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 import requests
 from io import BytesIO
-from PySide6.QtGui import QPainter, QColor, QBrush
+from PySide6.QtGui import QPainter, QColor, QBrush, QMovie
 
 
 class ClosestVolunteersView(QWidget):
@@ -23,19 +23,38 @@ class ClosestVolunteersView(QWidget):
         main_layout = QVBoxLayout(self)        
 
         # Create a QListWidget to hold the list of volunteers
-        self.list_widget = QListWidget()
+        self.listWidget = QListWidget()
 
         # Store items in a separate list for filtering
         self.items_data = []
 
         # Add the list widget to the layout
-        main_layout.addWidget(self.list_widget)
+        main_layout.addWidget(self.listWidget)
 
         self.setLayout(main_layout)
         self.resize(400, 500)
 
+        #set preloader
+        self.preloader = QMovie("images/volunteers.gif")
+        self.preloaderLabel = QLabel()
+        self.preloaderLabel.setMovie(self.preloader)
+        self.preloaderLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        main_layout.addWidget(self.preloaderLabel)
+        self.preloaderLabel.hide()
+
+
         stylesheet = self.load_stylesheet("views/styles/closestVolunteers.qss")
         self.setStyleSheet(stylesheet)
+
+    def show_preloader(self):
+        self.preloaderLabel.show()
+        self.preloader.start()
+        self.listWidget.hide()
+
+    def hide_preloader(self):
+        self.preloaderLabel.hide()
+        self.preloader.stop()
+        self.listWidget.show()
 
     
     def add_volunteers(self, volunteers):
@@ -104,8 +123,8 @@ class ClosestVolunteersView(QWidget):
             # Create a QListWidgetItem and set its custom widget
             list_item = QListWidgetItem()
             list_item.setSizeHint(volunteer_widget.sizeHint())  # Set the size of the item to match the widget
-            self.list_widget.addItem(list_item)  # Add item to the list
-            self.list_widget.setItemWidget(list_item, volunteer_widget)  # Set the widget for the list item
+            self.listWidget.addItem(list_item)  # Add item to the list
+            self.listWidget.setItemWidget(list_item, volunteer_widget)  # Set the widget for the list item
 
             # Store the volunteer's text and details for filtering
             self.items_data.append((f"{volunteer['firstName']} {volunteer['lastName']}", details))
@@ -114,4 +133,4 @@ class ClosestVolunteersView(QWidget):
         with open(filename, "r") as file:
             return file.read()
     def clear(self):
-        self.list_widget.clear()
+        self.listWidget.clear()

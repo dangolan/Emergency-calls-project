@@ -13,9 +13,3 @@ QListWidget::item {
     margin: 2px;
     border-radius: 5px;
 }
-QLabel {
-    background-color: #656565;
-}
-QHBoxLayout {
-    background-color: #656565;
-}

@@ -31,17 +31,21 @@ class EventsController:
 
     def create_map(self, event):
         self.mapView.show_preloader()
+        self.closestVolunteerView.show_preloader()
+        self.eventsDetailView.update_label(event)
         # Call the async function and wait for the result
         def show_map(volunteers):
             if volunteers:
                 # Draw the map with the route
                 self.mapView.hide_preloader()
+                self.closestVolunteerView.hide_preloader()
                 self.mapView.draw_map(volunteers, event.geoPoint.latitude, event.geoPoint.longitude)
                 self.closestVolunteerView.clear()
                 self.closestVolunteerView.add_volunteers(volunteers)
             else:
                 # Draw the map without the route
                 self.mapView.hide_preloader()
+                self.closestVolunteerView.hide_preloader()
                 self.mapView.draw_map([], event.geoPoint.latitude, event.geoPoint.longitude)
                 print("No volunteers found")
 

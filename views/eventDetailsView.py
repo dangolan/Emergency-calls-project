@@ -7,24 +7,29 @@ class EventDetailsView(QWidget):
         super().__init__()
 
         # create a layout
-        layout = QVBoxLayout()
-        label = QLabel()
+        self.layout = QVBoxLayout()
+        self.label = QLabel()
+        self.label.setObjectName("eventDetailsLabel")
+        self.layout.addWidget(self.label)
+        self.setLayout(self.layout)
 
-        # set the layout
+        # Load custom stylesheet (if exists)
+        self.load_stylesheet("views/styles/newEvent.qss")
 
-        label.setText(
-            "ID: 12345<br>"
-            "Time: 10:00 AM<br>"
-            "Status: Active<br>"
-            "Location: Main Hall<br>"
-            "Description: Event description goes here"
+
+    def update_label(self, event):
+        # Update label with new event details
+        new_text = (
+            f"ID: {event.id}<br>"
+            f"Time: {event.time}<br>"
+            f"Status: {event.status}<br>"
+            f"Location: {round(event.geoPoint.latitude, 4)}, {round(event.geoPoint.longitude, 4)}<br>"
+            f"Description: {event.description}"
         )
+        self.label.setText(new_text)
+    
+    def load_stylesheet(self, file_path):
+        with open(file_path, "r") as f:
+            self.setStyleSheet(f.read())
 
-        # Style the label
-        label.setStyleSheet("font-size: 14px; color: black;")
-        label.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        layout.addWidget(label)
-
-        self.setLayout(layout)
-
-        self.setStyleSheet("background-color: white;")
+        

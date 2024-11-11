@@ -20,16 +20,15 @@ class EmergencyEventSimulator(QObject):
             "theft",
             "natural disaster",
         ]
-    def generate_random_coordinates_in_gush_dan(self):
-        # Define the Gush Dan area with its coordinate ranges
-        lat_range = (32.0, 32.3)
-        lon_range = (34.75, 34.85)
+    def generate_random_coordinates_in_tel_aviv(self):
+        # Define the Tel Aviv area with a more specific coordinate range
+        lat_range = (32.0500, 32.1200)  # Narrower latitude range for Tel Aviv
+        lon_range = (34.7600, 34.8200)  # Narrower longitude range for Tel Aviv
 
         return (
             random.uniform(lat_range[0], lat_range[1]),  # latitude
             random.uniform(lon_range[0], lon_range[1])   # longitude
         )
-
 
     def generate_event(self):
         event_id = random.randint(1000, 9999)
@@ -38,7 +37,7 @@ class EmergencyEventSimulator(QObject):
         status = "Pending"
         description = f"{event_type} reported at {location}"
 
-        latitude, longitude = self.generate_random_coordinates_in_gush_dan()
+        latitude, longitude = self.generate_random_coordinates_in_tel_aviv()
         address = location  # Could be refined with actual address data
 
         event_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())

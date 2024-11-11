@@ -41,6 +41,7 @@ class EventsController:
                 self.closestVolunteerView.add_volunteers(volunteers)
             else:
                 # Draw the map without the route
+                self.mapView.hide_preloader()
                 self.mapView.draw_map([], event.geoPoint.latitude, event.geoPoint.longitude)
                 print("No volunteers found")
 

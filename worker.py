@@ -19,18 +19,12 @@ class Worker(QObject):
         try:
             # Call the provided function and get the response object
             res = self.func()
-            
-            # Check if the response code is 200
-            if res.status_code != 200:
-                self.error_signal.emit(f"Error: Received status code {res.status_code}")
+            if res:
+                # Emit the result signal with the response object
+                self.result_signal.emit(res)
             else:
-                # Attempt to parse the response as JSON
-                try:
-                    data = res.json()  # Parse JSON content
-                    self.result_signal.emit(data)
-                except ValueError:
-                    # Fallback to raw text if JSON parsing fails
-                    self.result_signal.emit(res.text)
+                # Emit an error signal with a message
+                self.error_signal.emit("No data found")
                     
         except Exception as e:
             # Emit an error signal with the exception message

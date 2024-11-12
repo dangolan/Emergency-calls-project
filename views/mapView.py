@@ -48,8 +48,9 @@ class MapView(QWidget):
         self.web_view.show()
         self.preloader.setVisible(False)
 
-    def draw_map(self, volunteers, eventLat, eventLon):
-        
+
+
+    def draw_map(self, eventVolunteers, eventLat, eventLon):
         # Create the map
         m = folium.Map(location=[eventLat, eventLon], zoom_start=12)
 
@@ -60,42 +61,43 @@ class MapView(QWidget):
             icon=folium.Icon(color='red')
         ).add_to(m)
 
-        if not volunteers:
+        if not eventVolunteers:
             print("No volunteers to display on the map")
             # Save the map to an HTML string and display it
             data = io.BytesIO()
             m.save(data, close_file=False)
-            map_html = data.getvalue().decode()
-            self.web_view.setHtml(map_html)
+            mapHtml = data.getvalue().decode()
+            self.web_view.setHtml(mapHtml)
             return
 
         # Draw routes for each volunteer in a different color and add markers for each volunteer
-        for volunteer in volunteers:
+        for eventVolunteer in eventVolunteers:
             # Random color for each route
-            route_color = "#{:06x}".format(random.randint(0, 0xFFFFFF))
-            
-            # Extract the volunteer's coordinates
-            coordinates = volunteer.get('routeCoordinates', [])
+            routeColor = "#{:06x}".format(random.randint(0, 0xFFFFFF))
+
+            # Extract route coordinates
+            coordinates = eventVolunteer.routeCoordinates
             if not coordinates:
-                print(f"Warning: No route coordinates for volunteer {volunteer.get('volunteerId')}")
+                print(f"Warning: No route coordinates for volunteer {eventVolunteer.volunteer.id}")
                 continue
-            
+
             # Draw the route on the map
             folium.PolyLine(
-                locations=[coord[::-1] for coord in coordinates],  # Reverse coordinates for folium (lat, lon)
+                locations=[(lat, lon) for lon, lat in coordinates],  # Reverse coordinates for folium (lat, lon)
                 weight=5,
-                color=route_color,
+                color=routeColor,
                 opacity=0.6
             ).add_to(m)
-            
 
-           # Assuming 'coordinates' and 'volunteer' are already defined
-            full_name = f"{volunteer['volunteer']['firstName']} {volunteer['volunteer']['lastName']}"
-            photo_url = volunteer['volunteer']['photoUrl']
+            # Extract volunteer details
+            volunteer = eventVolunteer.volunteer
+            fullName = f"{volunteer.firstName} {volunteer.lastName}"
+            photoUrl = volunteer.imageUrl
+
             # HTML content for the custom icon (image inside a circular background)
             html = f"""
                 <div style="background-color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">
-                    <img src="{photo_url}" style="border-radius: 50%; width: 28px; height: 28px;">
+                    <img src="{photoUrl}" style="border-radius: 50%; width: 28px; height: 28px;">
                 </div>
             """
             icon = folium.DivIcon(html=html)
@@ -103,15 +105,16 @@ class MapView(QWidget):
             # Add the custom marker with the volunteer's photo and name in the popup
             folium.Marker(
                 location=[coordinates[0][1], coordinates[0][0]],  # Starting point of the route
-                popup=full_name,  # Display the name in the popup
+                popup=fullName,  # Display the name in the popup
                 icon=icon  # Custom icon with the volunteer's image
             ).add_to(m)
-
 
         # Save the map to an HTML string and display it
         data = io.BytesIO()
         m.save(data, close_file=False)
-        map_html = data.getvalue().decode()
+        mapHtml = data.getvalue().decode()
+        self.web_view.setHtml(mapHtml)
+
 
         # Set the HTML content to the QWebEngineView
-        self.web_view.setHtml(map_html)
+        self.web_view.setHtml(mapHtml)

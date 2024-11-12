@@ -122,6 +122,7 @@ class ShellView(QMainWindow):
         # Create a label to display the number of events
         self.newEventsView = newEventsView
         self.main_layout.addWidget(self.newEventsView, 0, 0, 1, 2)
+        self.newEventsView.setObjectName("newEventsView")
 
         # Add the events list view
         self.eventsListView = eventsListView
@@ -149,7 +150,6 @@ class ShellView(QMainWindow):
     def init_status_bar(self):
         # Add a status bar
         self.statusBar = self.statusBar()
-        self.statusBar.showMessage("Status bar message")
         self.statusBar.setStyleSheet("background-color: black; color: white;")
 
     def load_stylesheet(self, filename):

@@ -27,3 +27,6 @@ QPushButton:pressed {
 QToolBar {
     background-color: #333333;  /* Blue background for the toolbar */
 }
+Qwidget#newEventsView {
+    background-color: #4e4e4e;  /* Light grey background */
+}

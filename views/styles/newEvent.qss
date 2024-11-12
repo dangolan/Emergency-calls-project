@@ -4,12 +4,14 @@ QLabel {
     border-radius: 5px;
     padding: 5px;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    margin: 0px;
 }
 
 QLabel#header {
     font-size: 20px;
     padding: 1px;
-    color:rgb(255, 63, 63)
+    color:rgb(255, 63, 63);
+    margin: 0px;
 }
 QLabel#eventDetailsLabel {
     font-size: 15px;

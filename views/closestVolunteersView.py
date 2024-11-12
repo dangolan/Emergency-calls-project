@@ -26,7 +26,7 @@ class ClosestVolunteersView(QWidget):
         self.listWidget = QListWidget()
 
         # Store items in a separate list for filtering
-        self.items_data = []
+        self.itemsData = []
 
         # Add the list widget to the layout
         main_layout.addWidget(self.listWidget)
@@ -57,37 +57,34 @@ class ClosestVolunteersView(QWidget):
         self.listWidget.show()
 
     
-    def add_volunteers(self, volunteers):
-        self.items_data.clear()  # Reset the items data list
-        # Sort volunteers by duration
-        sorted_volunteers = sorted(volunteers, key=lambda v: v["duration"])
+    def add_volunteers(self, eventVolunteers):
+        self.itemsData.clear()  # Reset the items data list
 
-        for volunteer_data in sorted_volunteers:
-            volunteer = volunteer_data["volunteer"]
-            distance = volunteer_data["distance"]
-            duration = volunteer_data["duration"]
+        # Sort event volunteers by duration
+        sortedEventVolunteers = sorted(eventVolunteers, key=lambda ev: ev.duration)
 
-            # Convert duration to minutes and distance to kilometers
-            duration_minutes = duration / 60
-            distance_km = distance / 1000
+        for eventVolunteer in sortedEventVolunteers:
+            volunteer = eventVolunteer.volunteer
+            distanceKm = eventVolunteer.distance / 1000  # Convert to kilometers
+            durationMinutes = eventVolunteer.duration / 60  # Convert to minutes
 
             # Create a widget for each volunteer
-            volunteer_widget = QWidget()
-            volunteer_layout = QHBoxLayout()
-            volunteer_layout.setSpacing(10)
+            volunteerWidget = QWidget()
+            volunteerLayout = QHBoxLayout()
+            volunteerLayout.setSpacing(10)
 
             # Load volunteer image
-            photo_url = volunteer["photoUrl"]
+            photoUrl = volunteer.imageUrl
             try:
-                response = requests.get(photo_url)
+                response = requests.get(photoUrl)
                 if response.status_code == 200:
                     pixmap = QPixmap()
                     pixmap.loadFromData(BytesIO(response.content).read())
 
                     # Create a circular image
-                    rounded_pixmap = QPixmap(pixmap.size())
-                    rounded_pixmap.fill(QColor("transparent"))
-                    painter = QPainter(rounded_pixmap)
+                    roundedPixmap = QPixmap(pixmap.size())
+                    roundedPixmap.fill(QColor("transparent"))
+                    painter = QPainter(roundedPixmap)
                     painter.setRenderHint(QPainter.Antialiasing)
                     painter.setBrush(QBrush(pixmap))
                     painter.setPen(Qt.transparent)
@@ -95,39 +92,40 @@ class ClosestVolunteersView(QWidget):
                     painter.end()
 
                     # Set the rounded image
-                    photo_label = QLabel()
-                    photo_label.setPixmap(rounded_pixmap.scaled(40, 40, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-                    photo_label.setObjectName("photoLabel")
+                    photoLabel = QLabel()
+                    photoLabel.setPixmap(roundedPixmap.scaled(40, 40, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+                    photoLabel.setObjectName("photoLabel")
                 else:
-                    photo_label = QLabel("No Image")
+                    photoLabel = QLabel("No Image")
             except Exception as e:
-                photo_label = QLabel("Image Load Error")
+                photoLabel = QLabel("Image Load Error")
 
             # Add photo to layout (right side)
-            volunteer_layout.addWidget(photo_label)
+            volunteerLayout.addWidget(photoLabel)
 
             # Volunteer details (left side)
-            details = f"{volunteer['firstName']} {volunteer['lastName']}\n" \
-                    f"{volunteer['city']} {volunteer['street']} {volunteer['houseNumber']}\n" \
-                    f"Distance: {distance_km:.2f} km\n" \
-                    f"Duration: {duration_minutes:.2f} min"
-            details_label = QLabel(details)
-            details_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+            details = f"{volunteer.firstName} {volunteer.lastName}\n" \
+                    f"{volunteer.city} {volunteer.street} {volunteer.houseNumber}\n" \
+                    f"Distance: {distanceKm:.2f} km\n" \
+                    f"Duration: {durationMinutes:.2f} min"
+            detailsLabel = QLabel(details)
+            detailsLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
 
             # Add details to layout
-            volunteer_layout.addWidget(details_label)
+            volunteerLayout.addWidget(detailsLabel)
 
             # Set the layout for the volunteer widget
-            volunteer_widget.setLayout(volunteer_layout)
+            volunteerWidget.setLayout(volunteerLayout)
 
             # Create a QListWidgetItem and set its custom widget
-            list_item = QListWidgetItem()
-            list_item.setSizeHint(volunteer_widget.sizeHint())  # Set the size of the item to match the widget
-            self.listWidget.addItem(list_item)  # Add item to the list
-            self.listWidget.setItemWidget(list_item, volunteer_widget)  # Set the widget for the list item
+            listItem = QListWidgetItem()
+            listItem.setSizeHint(volunteerWidget.sizeHint())  # Set the size of the item to match the widget
+            self.listWidget.addItem(listItem)  # Add item to the list
+            self.listWidget.setItemWidget(listItem, volunteerWidget)  # Set the widget for the list item
 
             # Store the volunteer's text and details for filtering
-            self.items_data.append((f"{volunteer['firstName']} {volunteer['lastName']}", details))
+            self.itemsData.append((f"{volunteer.firstName} {volunteer.lastName}", details))
+
 
     def load_stylesheet(self, filename):
         with open(filename, "r") as file:

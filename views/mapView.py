@@ -23,8 +23,8 @@ class MapView(QWidget):
         self.setLayout(self.layout)
 
         # Create QWebEngineView
-        self.web_view = QWebEngineView()
-        self.layout.addWidget(self.web_view)
+        self.webView = QWebEngineView()
+        self.layout.addWidget(self.webView)
 
          # Create a QLabel for the preloading spinner
         self.preloader = QLabel(self)
@@ -40,12 +40,12 @@ class MapView(QWidget):
 
     def show_preloader(self):
         self.preloader.setVisible(True)
-        self.web_view.hide()
+        self.webView.hide()
         self.spinner.start()  # Start the animation
 
     def hide_preloader(self):
         self.spinner.stop()  # Stop the animation
-        self.web_view.show()
+        self.webView.show()
         self.preloader.setVisible(False)
 
 
@@ -67,7 +67,7 @@ class MapView(QWidget):
             data = io.BytesIO()
             m.save(data, close_file=False)
             mapHtml = data.getvalue().decode()
-            self.web_view.setHtml(mapHtml)
+            self.webView.setHtml(mapHtml)
             return
 
         # Draw routes for each volunteer in a different color and add markers for each volunteer
@@ -113,8 +113,8 @@ class MapView(QWidget):
         data = io.BytesIO()
         m.save(data, close_file=False)
         mapHtml = data.getvalue().decode()
-        self.web_view.setHtml(mapHtml)
+        self.webView.setHtml(mapHtml)
 
 
         # Set the HTML content to the QWebEngineView
-        self.web_view.setHtml(mapHtml)
+        self.webView.setHtml(mapHtml)

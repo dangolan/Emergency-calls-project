@@ -7,8 +7,6 @@ QPushButton {
     margin-left: 10px;
     margin-right: 10px;
 }
-
-
 QPushButton#showEventsButton {
     background-color: #FF3333  /* Blue background */
 }

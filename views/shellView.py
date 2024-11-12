@@ -55,9 +55,9 @@ class ShellView(QMainWindow):
 
     def init_central_widget(self):
         # Create the main grid layout for the window
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        self.main_layout = QGridLayout(central_widget)
+        centralWidget = QWidget()
+        self.setCentralWidget(centralWidget)
+        self.mainLayout = QGridLayout(centralWidget)
 
         # Set geometry
         self.setGeometry(100, 100, 1000, 850)
@@ -86,6 +86,7 @@ class ShellView(QMainWindow):
 
         # Create the Back button
         self.backButton = QPushButton()
+        self.backButton.setObjectName("backButton")
         self.backButton.setIcon(QIcon("images/goBack.png"))  # Set your back arrow icon
 
         self.backButton.setIconSize(QSize(24, 24))  # Set the icon size
@@ -107,8 +108,8 @@ class ShellView(QMainWindow):
         self.showVolunteersButton.clicked.connect(self.showVolunteersClicked.emit)
 
         # Add buttons to the main layout
-        self.main_layout.addWidget(self.showEventsButton, 1, 0, 1, 2)
-        self.main_layout.addWidget(self.showVolunteersButton, 2, 0, 1, 2)
+        self.mainLayout.addWidget(self.showEventsButton, 1, 0, 1, 2)
+        self.mainLayout.addWidget(self.showVolunteersButton, 2, 0, 1, 2)
 
     def init_views(
         self,
@@ -121,31 +122,31 @@ class ShellView(QMainWindow):
     ):
         # Create a label to display the number of events
         self.newEventsView = newEventsView
-        self.main_layout.addWidget(self.newEventsView, 0, 0, 1, 2)
+        self.mainLayout.addWidget(self.newEventsView, 0, 0, 1, 2)
         self.newEventsView.setObjectName("newEventsView")
 
         # Add the events list view
         self.eventsListView = eventsListView
-        self.main_layout.addWidget(self.eventsListView, 0, 2, 6, 4)
+        self.mainLayout.addWidget(self.eventsListView, 0, 2, 6, 4)
 
         # Add the volunteers list view
         self.volunteersListView = volunteersListView
-        self.main_layout.addWidget(self.volunteersListView, 0, 2, 6, 4)
+        self.mainLayout.addWidget(self.volunteersListView, 0, 2, 6, 4)
 
         # Add the map view
         self.mapView = mapView
-        self.main_layout.addWidget(self.mapView, 0, 2, 5, 4)
+        self.mainLayout.addWidget(self.mapView, 0, 2, 5, 4)
 
         self.eventsListView.hide()
         self.volunteersListView.hide()
 
         # Add the event detail view
         self.eventsDetailView = eventsDetailView
-        self.main_layout.addWidget(self.eventsDetailView, 5, 2, 1, 4)
+        self.mainLayout.addWidget(self.eventsDetailView, 5, 2, 1, 4)
 
         # Add the closest volunteer view
         self.closestVolunteerView = closestVolunteerView
-        self.main_layout.addWidget(self.closestVolunteerView, 3, 0, 3, 2)
+        self.mainLayout.addWidget(self.closestVolunteerView, 3, 0, 3, 2)
 
     def init_status_bar(self):
         # Add a status bar

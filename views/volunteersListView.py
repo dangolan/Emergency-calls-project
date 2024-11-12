@@ -18,17 +18,17 @@ class VolunteersListView(QWidget):
     def __init__(self):
         super().__init__()
         # Create the main vertical layout
-        main_layout = QVBoxLayout(self)
+        mainLayout = QVBoxLayout(self)
 
         # Create a horizontal layout for the button and search input
-        top_layout = QHBoxLayout()
+        topLayout = QHBoxLayout()
 
         # Create a search input field (QLineEdit) for filtering
         self.searchInput = QLineEdit()
         self.searchInput.setObjectName("searchInput")
         self.searchInput.setPlaceholderText("Search for a volunteer...")
         self.searchInput.textChanged.connect(self.filter_items)
-        top_layout.addWidget(self.searchInput)
+        topLayout.addWidget(self.searchInput)
 
 
         # Create a button and add it to the right side of the top layout
@@ -36,17 +36,15 @@ class VolunteersListView(QWidget):
         self.addButton.clicked.connect(self.on_add_button_click)
         self.addButton.setObjectName("addButton")
         self.addButton.setIcon(QIcon("images/addBlack.png"))  # Set your add icon
-        top_layout.addWidget(self.addButton)
+        topLayout.addWidget(self.addButton)
 
         # Align the horizontal layout to the center
-        top_layout.setAlignment(Qt.AlignCenter)
-
+        topLayout.setAlignment(Qt.AlignCenter)
        
-        main_layout.addLayout(top_layout)
+        mainLayout.addLayout(topLayout)
 
         # Set the main layout as the layout for the widget
-        self.setLayout(main_layout)
-
+        self.setLayout(mainLayout)
 
         # Create a QListWidget to hold the list of volunteers
         self.list_widget = QListWidget()
@@ -61,12 +59,10 @@ class VolunteersListView(QWidget):
             self.list_widget.addItem(item)
             self.items_data.append((item_text, item_details))  # Store text and details
 
-
         # Add the list widget to the layout
-        main_layout.addWidget(self.list_widget)
+        mainLayout.addWidget(self.list_widget)
 
-
-        self.setLayout(main_layout)
+        self.setLayout(mainLayout)
         self.setWindowTitle("Volunteers List with Search")
         self.resize(400, 500)
 

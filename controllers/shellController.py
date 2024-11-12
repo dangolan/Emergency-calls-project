@@ -28,7 +28,7 @@ class ShellController:
         self.shellView.statusBar.showMessage(message)
 
         # Use a QTimer with a lambda to reset the style after 5 seconds
-        QTimer.singleShot(5000, lambda: (
+        QTimer.singleShot(10000, lambda: (
             self.shellView.statusBar.setStyleSheet("background-color: black; color: white;"),
             self.shellView.statusBar.clearMessage()
         ))

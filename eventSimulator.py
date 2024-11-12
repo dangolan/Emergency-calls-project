@@ -8,7 +8,7 @@ from entities.event import Event
 class EmergencyEventSimulator(QObject):
     add_event = Signal(Event)
 
-    def __init__(self, interval=10000):  # Corrected __init_ method
+    def __init__(self, interval=10):  # Corrected __init_ method
         super().__init__()
         self.interval = interval
         self.running = False
@@ -71,12 +71,12 @@ class EmergencyEventSimulator(QObject):
     
     def generate_random_coordinates_in_tel_aviv(self):
         # Define the Tel Aviv area with a more specific coordinate range
-        lat_range = (32.0500, 32.1200)  # Narrower latitude range for Tel Aviv
-        lon_range = (34.7600, 34.8200)  # Narrower longitude range for Tel Aviv
+        latRange = (32.0500, 32.1200)  # Narrower latitude range for Tel Aviv
+        lonRange = (34.7600, 34.8200)  # Narrower longitude range for Tel Aviv
 
         return (
-            random.uniform(lat_range[0], lat_range[1]),  # latitude
-            random.uniform(lon_range[0], lon_range[1])   # longitude
+            random.uniform(latRange[0], latRange[1]),  # latitude
+            random.uniform(lonRange[0], lonRange[1])   # longitude
         )
 
     def generate_event(self):

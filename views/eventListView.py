@@ -36,10 +36,10 @@ class EventListView(QWidget):
         layout = QVBoxLayout()
 
         # Create the QListWidget to hold the event items
-        self.list_widget = QListWidget()
+        self.listWidget = QListWidget()
 
         # Add the list widget to the main layout
-        layout.addWidget(self.list_widget)
+        layout.addWidget(self.listWidget)
 
         # Set the layout for the widget
         self.setLayout(layout)
@@ -61,85 +61,85 @@ class EventListView(QWidget):
 
     def add_custom_item(self, event: Event):
         # Create a QListWidgetItem (this is the container for each row)
-        list_item = QListWidgetItem(self.list_widget)
+        listItem = QListWidgetItem(self.listWidget)
 
         # Create a custom widget using the event instance
-        item_widget = self.create_item_widget(event, list_item)
+        itemWidget = self.create_item_widget(event, listItem)
 
         # Set the size hint of the list item based on the custom widget size
-        list_item.setSizeHint(item_widget.sizeHint())
+        listItem.setSizeHint(itemWidget.sizeHint())
 
         # Add the custom widget to the QListWidget's item
-        self.list_widget.setItemWidget(list_item, item_widget)
+        self.listWidget.setItemWidget(listItem, itemWidget)
 
     def create_item_widget(self, event: Event, list_item: QListWidgetItem):
         # Create a custom widget to hold the item label and buttons
-        item_widget = QWidget()
-        item_widget.setObjectName("customItem")
+        itemWidget = QWidget()
+        itemWidget.setObjectName("customItem")
 
         # Create a vertical layout for the custom widget to stack labels and buttons
-        item_layout = QVBoxLayout()
-        item_layout.setContentsMargins(5, 5, 5, 5)  # Better spacing
+        itemLayout = QVBoxLayout()
+        itemLayout.setContentsMargins(5, 5, 5, 5)  # Better spacing
 
         # Create labels for each attribute of the event
-        id_label = QLabel(f"ID: {event.id}")
-        description_label = QLabel(f"Description: {event.description}")
-        address_label = QLabel(f"Address: {event.address}\n")
-        time_label = QLabel(f"Time: {event.time}")
-        status_label = QLabel(f"Status: {event.status}")
+        idLabel = QLabel(f"ID: {event.id}")
+        descriptionLabel = QLabel(f"Description: {event.description}")
+        locationLabel = QLabel(f"Location: {round(event.geoPoint.latitude, 4)}, {round(event.geoPoint.longitude, 4)}")
+        timeLabel = QLabel(f"Time: {event.time}")
+        statusLabel = QLabel(f"Status: {event.status}")
 
         # Align labels
-        id_label.setAlignment(Qt.AlignLeft)
-        description_label.setAlignment(Qt.AlignLeft)
-        address_label.setAlignment(Qt.AlignLeft)
-        time_label.setAlignment(Qt.AlignLeft)
-        status_label.setAlignment(Qt.AlignLeft)
+        idLabel.setAlignment(Qt.AlignLeft)
+        descriptionLabel.setAlignment(Qt.AlignLeft)
+        locationLabel.setAlignment(Qt.AlignLeft)
+        timeLabel.setAlignment(Qt.AlignLeft)
+        statusLabel.setAlignment(Qt.AlignLeft)
 
         # Create a horizontal layout for the labe
-        label_layout = QHBoxLayout()
-        label_layout.addWidget(id_label)
-        label_layout.addWidget(address_label)
-        label_layout.addWidget(time_label)
-        label_layout.addWidget(status_label)
+        labelLayout = QHBoxLayout()
+        labelLayout.addWidget(idLabel)
+        labelLayout.addWidget(locationLabel)
+        labelLayout.addWidget(timeLabel)
+        labelLayout.addWidget(statusLabel)
 
         descriptionLayout = QHBoxLayout()
-        descriptionLayout.addWidget(description_label)
+        descriptionLayout.addWidget(descriptionLabel)
 
         # Add the labels to the item layout
-        item_layout.addLayout(label_layout)
-        item_layout.addLayout(descriptionLayout)
+        itemLayout.addLayout(labelLayout)
+        itemLayout.addLayout(descriptionLayout)
 
         # Create a horizontal layout for the buttons
-        button_layout = QHBoxLayout()
+        buttonLayout = QHBoxLayout()
 
         # Create the "Show" button
-        show_button = QPushButton("Show")
-        show_button.clicked.connect(
+        showButton = QPushButton("Show")
+        showButton.clicked.connect(
             lambda: self.show_item(event)
         )  # Pass event to show_item
-        show_button.setObjectName("showButton")
+        showButton.setObjectName("showButton")
 
         # Create the "Remove" button
-        remove_button = QPushButton("Remove")
-        remove_button.clicked.connect(
+        removeButton = QPushButton("Remove")
+        removeButton.clicked.connect(
             lambda: self.remove_item(list_item, event)
         )  # Pass event to remove_item
-        remove_button.setObjectName("removeButton")
+        removeButton.setObjectName("removeButton")
 
-        button_layout.setContentsMargins(5, 5, 5, 5)  # Set margins for the QHBoxLayout
+        buttonLayout.setContentsMargins(5, 5, 5, 5)  # Set margins for the QHBoxLayout
 
         # Add buttons to the button layout
-        button_layout.addWidget(show_button)
-        button_layout.addWidget(remove_button)
-        button_layout.setAlignment(Qt.AlignRight)
+        buttonLayout.addWidget(showButton)
+        buttonLayout.addWidget(removeButton)
+        buttonLayout.setAlignment(Qt.AlignRight)
 
         # Add the button layout to the main item layout
-        item_layout.addLayout(button_layout)
+        itemLayout.addLayout(buttonLayout)
 
         # Set the layout for the custom widget
-        item_widget.setLayout(item_layout)
+        itemWidget.setLayout(itemLayout)
 
-        return item_widget
+        return itemWidget
 
     def show_item(self, event: Event):
         print(
@@ -154,7 +154,7 @@ class EventListView(QWidget):
         self.showEventClicked.emit()
 
     def remove_item(self, list_item, event: Event):
-        row = self.list_widget.row(list_item)
-        self.list_widget.takeItem(row)
+        row = self.listWidget.row(list_item)
+        self.listWidget.takeItem(row)
         print(f"Event '{event.description}' has been removed.")
         self.removeEventClicked.emit(event)

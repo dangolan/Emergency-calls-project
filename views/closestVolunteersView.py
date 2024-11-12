@@ -20,7 +20,7 @@ class ClosestVolunteersView(QWidget):
         super().__init__()
 
         # Create the main vertical layout
-        main_layout = QVBoxLayout(self)        
+        mainLayout = QVBoxLayout(self)        
 
         # Create a QListWidget to hold the list of volunteers
         self.listWidget = QListWidget()
@@ -29,9 +29,9 @@ class ClosestVolunteersView(QWidget):
         self.itemsData = []
 
         # Add the list widget to the layout
-        main_layout.addWidget(self.listWidget)
+        mainLayout.addWidget(self.listWidget)
 
-        self.setLayout(main_layout)
+        self.setLayout(mainLayout)
         self.resize(400, 500)
 
         #set preloader
@@ -39,7 +39,7 @@ class ClosestVolunteersView(QWidget):
         self.preloaderLabel = QLabel()
         self.preloaderLabel.setMovie(self.preloader)
         self.preloaderLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        main_layout.addWidget(self.preloaderLabel)
+        mainLayout.addWidget(self.preloaderLabel)
         self.preloaderLabel.hide()
 
 

@@ -19,14 +19,14 @@ class EventDetailsView(QWidget):
 
     def update_label(self, event):
         # Update label with new event details
-        new_text = (
+        newText = (
             f"ID: {event.id}<br>"
             f"Time: {event.time}<br>"
             f"Status: {event.status}<br>"
             f"Location: {round(event.geoPoint.latitude, 4)}, {round(event.geoPoint.longitude, 4)}<br>"
             f"Description: {event.description}"
         )
-        self.label.setText(new_text)
+        self.label.setText(newText)
     
     def load_stylesheet(self, file_path):
         with open(file_path, "r") as f:

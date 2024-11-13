@@ -1,6 +1,5 @@
 import sys
 from PySide6.QtWidgets import QApplication, QWidget
-from controllers.volunteersListController import VolunteersListController
 from views.mapView import MapView
 from views.eventListView import EventListView
 from views.volunteersListView import VolunteersListView
@@ -10,12 +9,10 @@ from views.shellView import ShellView
 from controllers.shellController import ShellController
 from views.newEventsView import NewEventsView
 from controllers.eventsController import EventsController
-from PySide6.QtGui import QIcon
 from eventSimulator import EmergencyEventSimulator
 from models.eventsModel import EventsModel
 from models.volunteersModel import VolunteersModel
-import asyncio
-from PySide6.QtCore import QEventLoop
+from controllers.volunteersListController import VolunteersListController
 
 
 def main():
@@ -52,8 +49,10 @@ def main():
         closestVolunteerView,
         newEventsView,
         mapView,
-        eventsModel,
+        eventsModel
     )
+    volunteerController = VolunteersListController(volunteersListView, volunteersModel)
+    volunteerController.errorSignal.connect(shellController.error)
 
     eventContoller.add_observer_to_show_event(shellController.show_map_and_event)
     eventContoller.errorSignal.connect(shellController.error)
@@ -64,6 +63,7 @@ def main():
     shellView.show()
 
     sys.exit(app.exec())
+    
 
 
 if __name__ == "__main__":

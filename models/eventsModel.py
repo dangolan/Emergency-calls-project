@@ -25,6 +25,7 @@ class EventsModel():
             volData = item["volunteer"]
             volunteer = Volunteer(
                 id=volData["id"],
+                uniqueIdNumber=volData["uniqueIdNumber"],
                 firstName=volData["firstName"],
                 lastName=volData["lastName"],
                 phone=volData["phone"],

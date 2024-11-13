@@ -1,5 +1,7 @@
 import requests
 from entities.volunteer import Volunteer
+from io import BytesIO
+from PySide6.QtGui import QPixmap
 
 
 class VolunteersModel:
@@ -26,6 +28,7 @@ class VolunteersModel:
         for item in response_data:
             volunteer = Volunteer(
                 id=item["id"],
+                uniqueIdNumber=item["uniqueIdNumber"],
                 firstName=item["firstName"],
                 lastName=item["lastName"],
                 phone=item["phone"],
@@ -36,7 +39,13 @@ class VolunteersModel:
                 houseNumber=item["houseNumber"],
                 imageUrl=item["photoUrl"],
             )
-            volunteers.append(volunteer)
+            #fach img to pixmap object
+            response = requests.get(volunteer.imageUrl)
+            if response.status_code == 200:
+                pixmap = QPixmap()
+                pixmap.loadFromData(BytesIO(response.content).read())
+                image = pixmap
+            volunteers.append((volunteer, image))
         return volunteers
 
     def add_volunteer(self, volunteer):
@@ -49,9 +58,13 @@ class VolunteersModel:
                 return True
         return False
 
-    def delete_volunteer(self, id):
-        for i in range(len(self.volunteers)):
-            if self.volunteers[i].id == id:
-                del self.volunteers[i]
-                return True
-        return False
+    def delete_volunteer(self, volunteer):
+        url = f"http://localhost:7008/api/Volunteers/Delete/{volunteer.id}"
+        response = requests.delete(url)
+        if response.status_code == 204:
+            print(f"Deleted volunteer with ID: {volunteer.id} successfully.")
+            return volunteer.id
+        else:
+            raise Exception(
+                f"Failed to delete volunteer. Status code: {response.status_code} - {response.text}"
+            )

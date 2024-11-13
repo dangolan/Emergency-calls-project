@@ -104,7 +104,8 @@ class ClosestVolunteersView(QWidget):
             volunteerLayout.addWidget(photoLabel)
 
             # Volunteer details (left side)
-            details = f"{volunteer.firstName} {volunteer.lastName}\n" \
+            details = f"ID: {volunteer.uniqueIdNumber}\n" \
+                f"{volunteer.firstName} {volunteer.lastName}\n" \
                     f"{volunteer.city} {volunteer.street} {volunteer.houseNumber}\n" \
                     f"Distance: {distanceKm:.2f} km\n" \
                     f"Duration: {durationMinutes:.2f} min"
@@ -125,6 +126,7 @@ class ClosestVolunteersView(QWidget):
 
             # Store the volunteer's text and details for filtering
             self.itemsData.append((f"{volunteer.firstName} {volunteer.lastName}", details))
+
 
 
     def load_stylesheet(self, filename):

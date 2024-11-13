@@ -18,22 +18,25 @@ QLineEdit#searchInput {
     margin-bottom: 4px;
     max-width: 300px;
 }
-
-QListWidget {
-    background-color: #303030;  /* Light grey background */
-    padding: 5px;
-    font-size: 14px;
-    border-radius: 5px;
-}
-
 QListWidget::item {
-    background-color: #666666;  /* White background for items */
-    padding: 10px;
-    margin: 5px;
-    border-radius: 5px;
+    background-color: #4e4e4e; 
+    margin: 2px;
 }
 
 QListWidget::item:selected {
     background-color: #adadad;  /* Green background for selected items */
     color: #000000;             /* Black text for selected items */
+}
+QPushButton {
+    color: rgb(255, 255, 255);
+    border-radius: 10px;        /* Rounded corners */
+    font-size: 10px;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    padding: 6px;
+    margin-left: 2px;
+    margin-right: 2px;
+    background-color: #70ff5e;
+    max-width: 35px;
 }

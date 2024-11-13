@@ -1,11 +1,10 @@
-
 from worker import Worker
 from PySide6.QtCore import Signal, QObject
 
 
-
 class EventsController(QObject):
     errorSignal = Signal(str)
+
     def __init__(
         self,
         eventsDetailView=None,
@@ -13,7 +12,7 @@ class EventsController(QObject):
         closestVolunteerView=None,
         newEventsView=None,
         mapView=None,
-        eventsModel=None
+        eventsModel=None,
     ):
         super().__init__()
         self.newEventsView = newEventsView
@@ -28,7 +27,14 @@ class EventsController(QObject):
 
     def add_event(self, event):
         # This function will be called by the simulator with each new event
-        print("New event received:", event.id, event.geoPoint.latitude, event.geoPoint.longitude, event.description, event.time)
+        print(
+            "New event received:",
+            event.id,
+            event.geoPoint.latitude,
+            event.geoPoint.longitude,
+            event.description,
+            event.time,
+        )
         self.newEventsView.update_label(event)
         self.eventsListView.add_custom_item(event)
 
@@ -38,32 +44,41 @@ class EventsController(QObject):
         self.eventsDetailView.update_label(event)
 
         # Call the async function and wait for the result
-        def show_map(volunteers):
-            if volunteers:
+        def show_map(eventVolunteers):
+            if eventVolunteers:
                 # Draw the map with the route
                 self.mapView.hide_preloader()
                 self.closestVolunteerView.hide_preloader()
-                self.mapView.draw_map(volunteers, event.geoPoint.latitude, event.geoPoint.longitude)
+                self.mapView.draw_map(
+                    eventVolunteers, event.geoPoint.latitude, event.geoPoint.longitude
+                )
                 self.closestVolunteerView.clear()
-                self.closestVolunteerView.add_volunteers(volunteers)
+                self.closestVolunteerView.add_volunteers(eventVolunteers)
             else:
                 # Draw the map without the route
                 self.mapView.hide_preloader()
                 self.closestVolunteerView.hide_preloader()
-                self.mapView.draw_map([], event.geoPoint.latitude, event.geoPoint.longitude)
+                self.mapView.draw_map(
+                    [], event.geoPoint.latitude, event.geoPoint.longitude
+                )
                 print("No volunteers found")
+
         # Create a worker to call the async function
-        worker = Worker(lambda: self.eventsModel.get_routs_for_volunteers(event.geoPoint.latitude, event.geoPoint.longitude))
+        worker = Worker(
+            lambda: self.eventsModel.get_routs_for_volunteers(
+                event.geoPoint.latitude, event.geoPoint.longitude
+            )
+        )
         worker.result_signal.connect(show_map)
         worker.error_signal.connect(self.error)
         worker.start()
-    
+
     # Add observer to show event
     def add_observer_to_show_event(self, action):
         self.eventsListView.showEventClicked.connect(action)
+
     # Error function to pass error messages to the main thread
     def error(self, message):
         print(message)
         self.mapView.hide_preloader()
         self.errorSignal.emit(message)
-

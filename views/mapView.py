@@ -73,7 +73,7 @@ class MapView(QWidget):
         # Draw routes for each volunteer in a different color and add markers for each volunteer
         for eventVolunteer in eventVolunteers:
             # Random color for each route
-            routeColor = "#{:06x}".format(random.randint(0, 0xFFFFFF))
+            routeColor = "#{:02x}{:02x}{:02x}".format(*(random.randint(0, 128) for _ in range(3)))
 
             # Extract route coordinates
             coordinates = eventVolunteer.routeCoordinates

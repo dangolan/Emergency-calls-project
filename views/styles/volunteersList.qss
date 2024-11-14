@@ -14,7 +14,7 @@ QLineEdit#search {
     color: black;
     padding: 7px;
     margin-bottom: 1px;
-    max-width: 300px;
+    max-width: 400px;
 }
 QPushButton#add {
     background-color: #80ff60;  /* Green background */
@@ -23,6 +23,12 @@ QPushButton#add {
     max-width: 13px;
     max-height: 13px;
     margin: 8px;
+}
+QLabel#notification {
+    color: rgb(48, 48, 48);
+    background-color: #80ff60;  /* Green background */
+    font-size: 12px;
+    max-height: 20px;
 }
 QListWidget::item {
     background-color: #4e4e4e; 
@@ -41,6 +47,26 @@ QPushButton {
     margin-left: 2px;
     margin-right: 2px;
     max-width: 40px;
+}
+QPushButton#update:hover {
+    background-color: #48daff;  /* Darker blue on hover */
+}
+QPushButton#remove:hover {
+    background-color: #ff6b6b;  /* Darker blue on hover */
+}
+
+QPushButton#update:pressed {
+    background-color: #b4b4b4;  /* Green on press */
+}
+QPushButton#remove:pressed {
+    background-color: #b9b9b9;  /* Green on press */
+}
+QPushButton#add:hover {
+    background-color: #bcfcb6;  /* Darker blue on hover */
+}
+
+QPushButton#add:pressed {
+    background-color: #c5c5c5;  /* Green on press */
 }
 QListWidget {
     background-color: #383838;  /* Light grey background */

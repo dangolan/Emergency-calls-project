@@ -113,9 +113,9 @@ class EventListView(QWidget):
         buttonLayout = QHBoxLayout()
 
         # Create the "Show" button
-        showButton = QPushButton("Show")
+        showButton = QPushButton("handle")
         showButton.clicked.connect(
-            lambda: self.show_item(event)
+            lambda: self.show_item(event,showButton)
         )  # Pass event to show_item
         showButton.setObjectName("showButton")
 
@@ -141,7 +141,7 @@ class EventListView(QWidget):
 
         return itemWidget
 
-    def show_item(self, event: Event):
+    def show_item(self, event: Event, show_button: QPushButton):
         print(
             f"Showing event details:\n"
             f"ID: {event.id}\n"
@@ -150,6 +150,8 @@ class EventListView(QWidget):
             f"Time: {event.time}\n"
             f"Status: {event.status}\n"
         )
+        show_button.setText("Show again")
+        show_button.setStyleSheet("background-color: #03a109; width: 80px;")
         self.showEventDetailsClicked.emit(event)
         self.showEventClicked.emit()
 

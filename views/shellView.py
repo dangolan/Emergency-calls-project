@@ -16,6 +16,7 @@ class ShellView(QMainWindow):
     showEventsClicked = Signal()
     showVolunteersClicked = Signal()
     goBackClicked = Signal()
+    addVolunteerClicked = Signal()
 
     def __init__(
         self,
@@ -25,6 +26,7 @@ class ShellView(QMainWindow):
         eventsDetailView,
         closestVolunteerView,
         newEventsView,
+        addVolunteerView,
     ):
         super().__init__()
 
@@ -45,6 +47,7 @@ class ShellView(QMainWindow):
             eventsDetailView,
             closestVolunteerView,
             newEventsView,
+            addVolunteerView,
         )
 
         # Initialize the status bar
@@ -119,6 +122,7 @@ class ShellView(QMainWindow):
         eventsDetailView,
         closestVolunteerView,
         newEventsView,
+        addVolunteerView,
     ):
         # Create a label to display the number of events
         self.newEventsView = newEventsView
@@ -148,6 +152,12 @@ class ShellView(QMainWindow):
         self.closestVolunteerView = closestVolunteerView
         self.mainLayout.addWidget(self.closestVolunteerView, 3, 0, 3, 2)
 
+        # Add the add volunteer view
+        self.addVolunteerView = addVolunteerView
+        self.mainLayout.addWidget(self.addVolunteerView, 3, 0, 3, 2)
+
+        self.addVolunteerView.hide()
+
     def init_status_bar(self):
         # Add a status bar
         self.statusBar = self.statusBar()
@@ -160,6 +170,8 @@ class ShellView(QMainWindow):
     def show_events_list(self):
         self.eventsListView.show()
         self.mapView.hide()
+        self.addVolunteerView.hide()
+        self.closestVolunteerView.show()
         self.volunteersListView.hide()
         self.eventsDetailView.hide()
 
@@ -172,5 +184,12 @@ class ShellView(QMainWindow):
     def show_map_and_event(self):
         self.eventsListView.hide()
         self.volunteersListView.hide()
+        self.addVolunteerView.hide()
+        self.closestVolunteerView.show()
         self.mapView.show()
         self.eventsDetailView.show()
+
+    def show_add_volunteer(self):
+        self.addVolunteerView.show()
+        self.closestVolunteerView.hide()
+        print("show add volunteer")

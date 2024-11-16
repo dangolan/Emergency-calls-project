@@ -8,6 +8,7 @@ from views.closestVolunteersView import ClosestVolunteersView
 from views.shellView import ShellView
 from controllers.shellController import ShellController
 from views.newEventsView import NewEventsView
+from views.addVolunteerView import AddVolunteerView
 from controllers.eventsController import EventsController
 from eventSimulator import EmergencyEventSimulator
 from models.eventsModel import EventsModel
@@ -29,6 +30,8 @@ def main():
     closestVolunteerView = ClosestVolunteersView()
     # Create a View for showing new events
     newEventsView = NewEventsView()
+    # Create a view for adding a new volunteer
+    addVolunteerView = AddVolunteerView()
     # Create a shell view
     shellView = ShellView(
         mapView,
@@ -37,6 +40,7 @@ def main():
         eventsDetailView,
         closestVolunteerView,
         newEventsView,
+        addVolunteerView,
     )
     # Create models
     eventsModel = EventsModel()
@@ -49,11 +53,15 @@ def main():
         closestVolunteerView,
         newEventsView,
         mapView,
-        eventsModel
+        eventsModel,
     )
-    volunteerController = VolunteersListController(volunteersListView, volunteersModel)
+    volunteerController = VolunteersListController(
+        volunteersListView, volunteersModel, addVolunteerView
+    )
     volunteerController.errorSignal.connect(shellController.error)
-
+    volunteerController.add_observer_to_add_volunteer(
+        shellController.show_add_volunteer
+    )
     eventContoller.add_observer_to_show_event(shellController.show_map_and_event)
     eventContoller.errorSignal.connect(shellController.error)
     simulator = EmergencyEventSimulator(5)
@@ -63,7 +71,6 @@ def main():
     shellView.show()
 
     sys.exit(app.exec())
-    
 
 
 if __name__ == "__main__":

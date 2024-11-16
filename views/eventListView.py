@@ -13,7 +13,6 @@ from entities.event import Event
 from PySide6.QtCore import Signal
 
 
-
 class EventListView(QWidget):
     showEventDetailsClicked = Signal(Event)
     showEventClicked = Signal()
@@ -84,23 +83,21 @@ class EventListView(QWidget):
         # Create labels for each attribute of the event
         idLabel = QLabel(f"ID: {event.id}")
         descriptionLabel = QLabel(f"Description: {event.description}")
-        locationLabel = QLabel(f"Location: {round(event.geoPoint.latitude, 4)}, {round(event.geoPoint.longitude, 4)}")
+        locationLabel = QLabel(
+            f"Location: {round(event.geoPoint.latitude, 4)}, {round(event.geoPoint.longitude, 4)}"
+        )
         timeLabel = QLabel(f"Time: {event.time}")
-        statusLabel = QLabel(f"Status: {event.status}")
-
         # Align labels
         idLabel.setAlignment(Qt.AlignLeft)
         descriptionLabel.setAlignment(Qt.AlignLeft)
         locationLabel.setAlignment(Qt.AlignLeft)
         timeLabel.setAlignment(Qt.AlignLeft)
-        statusLabel.setAlignment(Qt.AlignLeft)
 
         # Create a horizontal layout for the labe
         labelLayout = QHBoxLayout()
         labelLayout.addWidget(idLabel)
         labelLayout.addWidget(locationLabel)
         labelLayout.addWidget(timeLabel)
-        labelLayout.addWidget(statusLabel)
 
         descriptionLayout = QHBoxLayout()
         descriptionLayout.addWidget(descriptionLabel)
@@ -115,7 +112,7 @@ class EventListView(QWidget):
         # Create the "Show" button
         showButton = QPushButton("handle")
         showButton.clicked.connect(
-            lambda: self.show_item(event,showButton)
+            lambda: self.show_item(event, showButton)
         )  # Pass event to show_item
         showButton.setObjectName("showButton")
 
@@ -150,6 +147,7 @@ class EventListView(QWidget):
             f"Time: {event.time}\n"
             f"Status: {event.status}\n"
         )
+        event.status = "Handled"
         show_button.setText("Show again")
         show_button.setStyleSheet("background-color: #03a109; width: 80px;")
         self.showEventDetailsClicked.emit(event)

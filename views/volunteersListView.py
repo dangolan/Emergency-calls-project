@@ -15,10 +15,12 @@ import requests
 from entities.volunteer import Volunteer
 from PySide6.QtCore import QTimer
 
+
 class VolunteersListView(QWidget):
     # Define signals to emit the volunteer for remove and update actions
     remove_volunteer_signal = Signal(Volunteer)
     update_volunteer_signal = Signal(Volunteer)
+    addVolunteerClicked = Signal()
 
     def __init__(self):
         super().__init__()
@@ -42,8 +44,8 @@ class VolunteersListView(QWidget):
         # Add a button to add a new volunteer
         self.addVolunteerButton = QPushButton()
         self.addVolunteerButton.setObjectName("add")
-        self.addVolunteerButton.setIcon(QIcon("images/addBlack.png"))   
-        self.addVolunteerButton.clicked.connect(lambda: print("Add Volunteer"))
+        self.addVolunteerButton.setIcon(QIcon("images/addBlack.png"))
+        self.addVolunteerButton.clicked.connect(lambda: self.emit_add())
 
         # Create a horizontal layout for search and add button
         searchLayout = QHBoxLayout()
@@ -70,9 +72,11 @@ class VolunteersListView(QWidget):
 
         # Connect search input and combo box to the search function
         self.searchLineEdit.textChanged.connect(self.perform_search)
-        self.searchTypeComboBox.currentTextChanged.connect(lambda: self.edit_search_line_placeholder())
+        self.searchTypeComboBox.currentTextChanged.connect(
+            lambda: self.edit_search_line_placeholder()
+        )
 
-        #set notifcation label
+        # set notifcation label
         self.notificationLabel = QLabel()
         self.notificationLabel.setObjectName("notification")
         mainLayout.addWidget(self.notificationLabel)
@@ -87,11 +91,11 @@ class VolunteersListView(QWidget):
         self.preloaderLabel.hide()
         self.preloader.stop()
         self.volunteerList.show()
-    
+
     def show_notification(self, message):
         self.notificationLabel.setText(message)
         self.notificationLabel.show()
-        QTimer.singleShot(5000, lambda: self.notificationLabel.hide())    
+        QTimer.singleShot(5000, lambda: self.notificationLabel.hide())
 
     def add_volunteer(self, volunteer: Volunteer, image: QPixmap):
         # Create a custom widget to hold volunteer information
@@ -102,7 +106,9 @@ class VolunteersListView(QWidget):
         left_layout = QHBoxLayout()
         left_layout.setSpacing(2)
 
-        image = image.scaled(50, 50, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation)
+        image = image.scaled(
+            50, 50, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation
+        )
         rounded_image = QPixmap(image.size())
         rounded_image.fill(Qt.transparent)
 
@@ -121,10 +127,12 @@ class VolunteersListView(QWidget):
         left_layout.addWidget(image_label)
 
         # Volunteer details label
-        details = f"ID: {volunteer.uniqueIdNumber}\n" \
-                  f"{volunteer.firstName} {volunteer.lastName}\n" \
-                  f"{volunteer.street} {volunteer.houseNumber} {volunteer.city}\n" \
-                  f"{volunteer.phone}"
+        details = (
+            f"ID: {volunteer.uniqueIdNumber}\n"
+            f"{volunteer.firstName} {volunteer.lastName}\n"
+            f"{volunteer.street} {volunteer.houseNumber} {volunteer.city}\n"
+            f"{volunteer.phone}"
+        )
         details_label = QLabel(details)
         details_label.setAlignment(Qt.AlignLeft)
         left_layout.addWidget(details_label)
@@ -171,17 +179,28 @@ class VolunteersListView(QWidget):
 
         # Filter based on search type
         if search_type == "ID":
-            filtered_volunteers = [v for v in self.volunteers if v[0].uniqueIdNumber == search_term]
+            filtered_volunteers = [
+                v for v in self.volunteers if search_term in v[0].uniqueIdNumber
+            ]
         elif search_type == "Address":
-            filtered_volunteers = [v for v in self.volunteers if search_term in f"{v[0].street} {v[0].houseNumber} {v[0].city}"]
+            filtered_volunteers = [
+                v
+                for v in self.volunteers
+                if search_term in f"{v[0].street} {v[0].houseNumber} {v[0].city}"
+            ]
         elif search_type == "Name":
-            filtered_volunteers = [v for v in self.volunteers if search_term.lower() in v[0].firstName.lower() or search_term.lower() in v[0].lastName.lower()]
+            filtered_volunteers = [
+                v
+                for v in self.volunteers
+                if search_term.lower() in v[0].firstName.lower()
+                or search_term.lower() in v[0].lastName.lower()
+            ]
         else:
             filtered_volunteers = self.volunteers
 
         # Display filtered volunteers
         for volunteer in filtered_volunteers:
-            self.add_volunteer(volunteer[0],volunteer[1])
+            self.add_volunteer(volunteer[0], volunteer[1])
 
     def edit_search_line_placeholder(self):
         self.searchLineEdit.clear()
@@ -201,7 +220,10 @@ class VolunteersListView(QWidget):
     def emit_update(self, volunteer):
         self.update_volunteer_signal.emit(volunteer)
 
-    def delete_volunteer(self,id):
+    def emit_add(self):
+        self.addVolunteerClicked.emit()
+
+    def delete_volunteer(self, id):
         self.show_notification("Volunteer deleted successfully")
         self.volunteerList.clear()
         for i in range(len(self.volunteers)):
@@ -210,7 +232,7 @@ class VolunteersListView(QWidget):
                 break
         for volunteer in self.volunteers:
             self.add_volunteer(volunteer[0], volunteer[1])
-        
+
     def load_stylesheet(self, filename):
         with open(filename, "r") as file:
             return file.read()

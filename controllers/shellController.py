@@ -10,6 +10,7 @@ class ShellController:
             lambda: self.show_volunteers_list()
         )
         self.shellView.goBackClicked.connect(lambda: self.show_map_and_event())
+        self.shellView.addVolunteerClicked.connect(lambda: self.show_add_volunteer())
 
     # Define methods to show views
     def show_events_list(self):
@@ -21,6 +22,9 @@ class ShellController:
     def show_map_and_event(self):
         self.shellView.show_map_and_event()
 
+    def show_add_volunteer(self):
+        self.shellView.show_add_volunteer()
+
     # Define error method for status bar
     def error(self, message):
         # Set status bar red
@@ -28,8 +32,12 @@ class ShellController:
         self.shellView.statusBar.showMessage(message)
 
         # Use a QTimer with a lambda to reset the style after 5 seconds
-        QTimer.singleShot(10000, lambda: (
-            self.shellView.statusBar.setStyleSheet("background-color: black; color: white;"),
-            self.shellView.statusBar.clearMessage()
-        ))
-
+        QTimer.singleShot(
+            10000,
+            lambda: (
+                self.shellView.statusBar.setStyleSheet(
+                    "background-color: black; color: white;"
+                ),
+                self.shellView.statusBar.clearMessage(),
+            ),
+        )

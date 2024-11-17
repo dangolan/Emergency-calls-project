@@ -63,7 +63,7 @@ class ShellView(QMainWindow):
         self.mainLayout = QGridLayout(centralWidget)
 
         # Set geometry
-        self.setGeometry(100, 100, 1000, 850)
+        self.setGeometry(100, 100, 1000, 600)
 
     def init_toolbar(self):
         # Add a toolbar

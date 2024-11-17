@@ -1,0 +1,17 @@
+QLineEdit{
+    border-radius: 5px;
+    padding: 3px;
+    color:#ffffff;
+    background-color: #4e4e4e;
+}
+QPushButton{
+    border-radius: 7px;
+    padding: 7px;
+    color:#000000;
+}
+QPushButton#save{
+    background-color: #80ff60;
+}
+QPushButton#cancel{
+    background-color: #ff6b6b;
+}

@@ -13,10 +13,11 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QDragEnterEvent, QDropEvent, QPixmap
+from entities.volunteer import Volunteer
 
 
 class AddVolunteerView(QWidget):
-    def __init__(self):
+    def __init__(self,volunteer: Volunteer = None):
         super().__init__()
 
         self.setWindowTitle("Add Volunteer")
@@ -27,29 +28,61 @@ class AddVolunteerView(QWidget):
 
         # Form layout
         formLayout = QFormLayout()
+        #header label
+        headerLabel = QLabel("Add Volunteer")
+        if volunteer:
+            headerLabel.setText("Edit Volunteer")
+        # set the label to center
+        headerLabel.setAlignment(Qt.AlignCenter)
+        mainLayout.addWidget(headerLabel)
 
         # Add form fields
-        self.idField = QLineEdit()
         self.uniqueIdNumberField = QLineEdit()
         self.firstNameField = QLineEdit()
         self.lastNameField = QLineEdit()
         self.phoneField = QLineEdit()
-        self.addressField = QLineEdit()
+        self.city = QLineEdit()
+        self.street = QLineEdit()
+        self.houseNumber = QLineEdit()
+        #set placeholder text
+        self.uniqueIdNumberField.setPlaceholderText("ID number")
+        self.firstNameField.setPlaceholderText("First name")
+        self.lastNameField.setPlaceholderText("Last name")
+        self.phoneField.setPlaceholderText("Phone number")
+        self.city.setPlaceholderText("City")
+        self.street.setPlaceholderText("Street")
+        self.houseNumber.setPlaceholderText("House number")
 
-        # Add form fields to layout
-        formLayout.addRow("ID:", self.idField)
-        formLayout.addRow("Unique ID Number:", self.uniqueIdNumberField)
-        formLayout.addRow("First Name:", self.firstNameField)
-        formLayout.addRow("Last Name:", self.lastNameField)
-        formLayout.addRow("Phone:", self.phoneField)
-        formLayout.addRow("Address:", self.addressField)
+        if volunteer:
+            self.uniqueIdNumberField.setText(volunteer.uniqueIdNumber)
+            self.firstNameField.setText(volunteer.firstName)
+            self.lastNameField.setText(volunteer.lastName)
+            self.phoneField.setText(volunteer.phone)
+            self.city.setText(volunteer.city)
+            self.street.setText(volunteer.street)
+            self.houseNumber.setText(volunteer.houseNumber)
+        #add qhbox layout for first name and last name
+        nameLayout = QHBoxLayout()
+        nameLayout.addWidget(self.firstNameField)
+        nameLayout.addWidget(self.lastNameField)
 
+        #add qhbox layout for city, street and house number
+        addressLayout = QHBoxLayout()
+        addressLayout.addWidget(self.city)
+        addressLayout.addWidget(self.street)
+        addressLayout.addWidget(self.houseNumber)
+        # Add form fields to the form layout
+        formLayout.addRow(self.uniqueIdNumberField)
+        formLayout.addRow(nameLayout)
+        formLayout.addRow(self.phoneField)
+        formLayout.addRow(addressLayout)
+        
         # Image field with drag-and-drop
         self.imageLabel = QLabel("Drag and drop an image here")
         self.imageLabel.setStyleSheet("border: 2px dashed #aaaaaa; padding: 2px;")
         self.imageLabel.setAlignment(Qt.AlignCenter)
         self.imageLabel.setFixedHeight(100)
-        formLayout.addRow("Image:", self.imageLabel)
+        formLayout.addRow(self.imageLabel)
 
         # Add the form layout to the main layout
         mainLayout.addLayout(formLayout)
@@ -57,12 +90,17 @@ class AddVolunteerView(QWidget):
         # Buttons
         buttonLayout = QHBoxLayout()
         saveButton = QPushButton("Save")
+        saveButton.setObjectName("save")
         cancelButton = QPushButton("Cancel")
+        cancelButton.setObjectName("cancel")
         buttonLayout.addWidget(saveButton)
         buttonLayout.addWidget(cancelButton)
 
         # Add buttons to main layout
         mainLayout.addLayout(buttonLayout)
+
+        #set style sheet
+        self.setStyleSheet(self.loadStyleSheet("views/styles/addVolunteer.qss"))
 
         # Connect buttons to actions
         saveButton.clicked.connect(self.saveVolunteer)
@@ -90,18 +128,21 @@ class AddVolunteerView(QWidget):
 
     def saveVolunteer(self):
         """Save volunteer information."""
+        volunteerID = self.volunteer.id if self.volunteer else 0
         # Collect data from the fields
-        data = {
-            "id": self.idField.text(),
-            "uniqueIdNumber": self.uniqueIdNumberField.text(),
-            "firstName": self.firstNameField.text(),
-            "lastName": self.lastNameField.text(),
-            "phone": self.phoneField.text(),
-            "address": self.addressField.text(),
-            "imageUrl": self.imageLabel.toolTip(),  # The image path
-        }
-        QMessageBox.information(
-            self, "Volunteer Saved", f"Volunteer information saved:\n{data}"
+        volunteer = Volunteer(
+            volunteerID,
+            self.uniqueIdNumberField.text(),
+            self.firstNameField.text(),
+            self.lastNameField.text(),
+            self.phoneField.text(),
+            self.city.text(),
+            self.street.text(),
+            self.houseNumber.text(),
+            ""
         )
         # Handle saving logic here
         self.close()
+    def loadStyleSheet(self, name):
+        with open(name, "r") as file:
+            return file.read()

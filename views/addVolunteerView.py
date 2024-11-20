@@ -17,7 +17,7 @@ from entities.volunteer import Volunteer
 
 
 class AddVolunteerView(QWidget):
-    def __init__(self,volunteer: Volunteer = None):
+    def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Add Volunteer")
@@ -25,17 +25,13 @@ class AddVolunteerView(QWidget):
 
         # Main layout
         mainLayout = QVBoxLayout(self)
-
         # Form layout
         formLayout = QFormLayout()
         #header label
         headerLabel = QLabel("Add Volunteer")
-        if volunteer:
-            headerLabel.setText("Edit Volunteer")
         # set the label to center
         headerLabel.setAlignment(Qt.AlignCenter)
         mainLayout.addWidget(headerLabel)
-
         # Add form fields
         self.uniqueIdNumberField = QLineEdit()
         self.firstNameField = QLineEdit()
@@ -53,14 +49,6 @@ class AddVolunteerView(QWidget):
         self.street.setPlaceholderText("Street")
         self.houseNumber.setPlaceholderText("House number")
 
-        if volunteer:
-            self.uniqueIdNumberField.setText(volunteer.uniqueIdNumber)
-            self.firstNameField.setText(volunteer.firstName)
-            self.lastNameField.setText(volunteer.lastName)
-            self.phoneField.setText(volunteer.phone)
-            self.city.setText(volunteer.city)
-            self.street.setText(volunteer.street)
-            self.houseNumber.setText(volunteer.houseNumber)
         #add qhbox layout for first name and last name
         nameLayout = QHBoxLayout()
         nameLayout.addWidget(self.firstNameField)
@@ -143,6 +131,24 @@ class AddVolunteerView(QWidget):
         )
         # Handle saving logic here
         self.close()
+    def set_volunteer(self, volunteer):
+        self.uniqueIdNumberField.setText(volunteer.uniqueIdNumber)
+        self.firstNameField.setText(volunteer.firstName)
+        self.lastNameField.setText(volunteer.lastName)
+        self.phoneField.setText(volunteer.phone)
+        self.city.setText(volunteer.city)
+        self.street.setText(volunteer.street)
+        self.houseNumber.setText(volunteer.houseNumber)
+    
+        # Set the image
+        if volunteer.imageUrl:
+            pixmap = QPixmap()
+            pixmap.loadFromData(volunteer.imageUrl)
+            self.imageLabel.setPixmap(
+                pixmap.scaled(self.imageLabel.size(), Qt.KeepAspectRatio)
+            )
+            self.imageLabel.setToolTip(volunteer.imageUrl)
+
     def loadStyleSheet(self, name):
         with open(name, "r") as file:
             return file.read()

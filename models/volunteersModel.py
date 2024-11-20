@@ -39,7 +39,7 @@ class VolunteersModel:
                 houseNumber=item["houseNumber"],
                 imageUrl=item["photoUrl"],
             )
-            #fach img to pixmap object
+            # fach img to pixmap object
             response = requests.get(volunteer.imageUrl)
             if response.status_code == 200:
                 pixmap = QPixmap()
@@ -48,15 +48,42 @@ class VolunteersModel:
             volunteers.append((volunteer, image))
         return volunteers
 
-    def add_volunteer(self, volunteer):
-        self.volunteers.append(volunteer)
+    def addVolunteer(self, volunteer):
+        """Save the volunteer to the database or remote service."""
+        url = "http://localhost:7008/api/Volunteers/Add"
+        payload = {
+            "id": volunteer.id,
+            "uniqueIdNumber": volunteer.uniqueIdNumber,
+            "firstName": volunteer.firstName,
+            "lastName": volunteer.lastName,
+            "phone": volunteer.phone,
+            "latitude": volunteer.geoPoint.latitude,
+            "longitude": volunteer.geoPoint.longitude,
+            "city": volunteer.city,
+            "street": volunteer.street,
+            "houseNumber": volunteer.houseNumber,
+            "imageUrl": volunteer.imageUrl,
+        }
+        headers = {"Content-Type": "application/json"}
 
-    def update_volunteer(self, id, volunteer):
-        for i in range(len(self.volunteers)):
-            if self.volunteers[i].id == id:
-                self.volunteers[i] = volunteer
-                return True
-        return False
+        response = requests.post(url, json=payload, headers=headers)
+        if response.status_code == 201:  # Assuming 201 indicates success
+            return response.json().get("id", 0)
+        else:
+            raise Exception(
+                f"Failed to save volunteer: {response.status_code} - {response.text}"
+            )
+
+    def update_volunteer(self, volunteer):
+        url = "http://localhost:7008/api/Volunteers/Update/{volunteer.id}"
+        response = requests.get(url)
+        if response.status_code == 204:
+            print(f"Updated volunteer with ID: {volunteer.id} successfully.")
+            return volunteer.id
+        else:
+            raise Exception(
+                f"Failed to update volunteer. Status code: {response.status_code} - {response.text}"
+            )
 
     def delete_volunteer(self, volunteer):
         url = f"http://localhost:7008/api/Volunteers/Delete/{volunteer.id}"

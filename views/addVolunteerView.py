@@ -27,7 +27,7 @@ class AddVolunteerView(QWidget):
         mainLayout = QVBoxLayout(self)
         # Form layout
         formLayout = QFormLayout()
-        #header label
+        # header label
         headerLabel = QLabel("Add Volunteer")
         # set the label to center
         headerLabel.setAlignment(Qt.AlignCenter)
@@ -40,7 +40,7 @@ class AddVolunteerView(QWidget):
         self.city = QLineEdit()
         self.street = QLineEdit()
         self.houseNumber = QLineEdit()
-        #set placeholder text
+        # set placeholder text
         self.uniqueIdNumberField.setPlaceholderText("ID number")
         self.firstNameField.setPlaceholderText("First name")
         self.lastNameField.setPlaceholderText("Last name")
@@ -49,12 +49,12 @@ class AddVolunteerView(QWidget):
         self.street.setPlaceholderText("Street")
         self.houseNumber.setPlaceholderText("House number")
 
-        #add qhbox layout for first name and last name
+        # add qhbox layout for first name and last name
         nameLayout = QHBoxLayout()
         nameLayout.addWidget(self.firstNameField)
         nameLayout.addWidget(self.lastNameField)
 
-        #add qhbox layout for city, street and house number
+        # add qhbox layout for city, street and house number
         addressLayout = QHBoxLayout()
         addressLayout.addWidget(self.city)
         addressLayout.addWidget(self.street)
@@ -64,7 +64,7 @@ class AddVolunteerView(QWidget):
         formLayout.addRow(nameLayout)
         formLayout.addRow(self.phoneField)
         formLayout.addRow(addressLayout)
-        
+
         # Image field with drag-and-drop
         self.imageLabel = QLabel("Drag and drop an image here")
         self.imageLabel.setStyleSheet("border: 2px dashed #aaaaaa; padding: 2px;")
@@ -87,7 +87,7 @@ class AddVolunteerView(QWidget):
         # Add buttons to main layout
         mainLayout.addLayout(buttonLayout)
 
-        #set style sheet
+        # set style sheet
         self.setStyleSheet(self.loadStyleSheet("views/styles/addVolunteer.qss"))
 
         # Connect buttons to actions
@@ -127,10 +127,11 @@ class AddVolunteerView(QWidget):
             self.city.text(),
             self.street.text(),
             self.houseNumber.text(),
-            ""
+            "",
         )
         # Handle saving logic here
         self.close()
+
     def set_volunteer(self, volunteer):
         self.uniqueIdNumberField.setText(volunteer.uniqueIdNumber)
         self.firstNameField.setText(volunteer.firstName)
@@ -139,7 +140,7 @@ class AddVolunteerView(QWidget):
         self.city.setText(volunteer.city)
         self.street.setText(volunteer.street)
         self.houseNumber.setText(volunteer.houseNumber)
-    
+
         # Set the image
         if volunteer.imageUrl:
             pixmap = QPixmap()

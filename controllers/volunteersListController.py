@@ -32,10 +32,6 @@ class VolunteersListController(QObject):
         worker.error_signal.connect(self.error)
         worker.start()
 
-    def error(self, message):
-        print(message)
-        self.errorSignal.emit(message)
-
     def remove_volunteer(self, volunteer):
         # Create a worker to call the async function
         worker = Worker(lambda: self.model.delete_volunteer(volunteer))
@@ -43,11 +39,21 @@ class VolunteersListController(QObject):
         worker.error_signal.connect(self.error)
         worker.start()
 
+    def add_volunteer(self, volunteer):
+        worker = Worker(lambda: self.model.add_volunteer(volunteer))
+        worker.result_signal.connect(self.view.add_volunteer)
+        worker.error_signal.connect(self.error)
+        worker.start()
+
+    def update_volunteer(self, volunteer):
+        worker = Worker(lambda: self.model.update_volunteer(volunteer))
+        worker.result_signal.connect(self.view.update_volunteer)
+        worker.error_signal.connect(self.error)
+        worker.start()
+
     def add_observer_to_add_volunteer(self, action):
         self.view.addVolunteerClicked.connect(action)
 
-    def add_volunteer(self):
-        print("Add Volunteer")
-
-    def update_volunteer(self, volunteer):
-        print("Update Volunteer")
+    def error(self, message):
+        print(message)
+        self.errorSignal.emit(message)

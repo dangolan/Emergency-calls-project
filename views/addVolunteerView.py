@@ -14,15 +14,17 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QDragEnterEvent, QDropEvent, QPixmap
 from entities.volunteer import Volunteer
+from PySide6.QtCore import Signal
+from entities.volunteer import GeoPoint  # Import GeoPoint
 
 
 class AddVolunteerView(QWidget):
+    save_volunteer_signal = Signal(Volunteer)
+
     def __init__(self):
         super().__init__()
-
         self.setWindowTitle("Add Volunteer")
         self.setAcceptDrops(True)  # Enable drag-and-drop
-
         # Main layout
         mainLayout = QVBoxLayout(self)
         # Form layout
@@ -74,25 +76,22 @@ class AddVolunteerView(QWidget):
 
         # Add the form layout to the main layout
         mainLayout.addLayout(formLayout)
-
         # Buttons
         buttonLayout = QHBoxLayout()
-        saveButton = QPushButton("Save")
-        saveButton.setObjectName("save")
+
         cancelButton = QPushButton("Cancel")
         cancelButton.setObjectName("cancel")
-        buttonLayout.addWidget(saveButton)
         buttonLayout.addWidget(cancelButton)
+        cancelButton.clicked.connect(self.close)
 
-        # Add buttons to main layout
+        saveButton = QPushButton("Save")
+        saveButton.setObjectName("save")
+        buttonLayout.addWidget(saveButton)
         mainLayout.addLayout(buttonLayout)
+        saveButton.clicked.connect(self.saveVolunteer)
 
         # set style sheet
         self.setStyleSheet(self.loadStyleSheet("views/styles/addVolunteer.qss"))
-
-        # Connect buttons to actions
-        saveButton.clicked.connect(self.saveVolunteer)
-        cancelButton.clicked.connect(self.close)
 
     def dragEnterEvent(self, event: QDragEnterEvent):
         """Handle drag enter event."""
@@ -115,21 +114,37 @@ class AddVolunteerView(QWidget):
                 )
 
     def saveVolunteer(self):
-        """Save volunteer information."""
-        volunteerID = self.volunteer.id if self.volunteer else 0
-        # Collect data from the fields
+        volunteerID = 0
+        image_path = self.imageLabel.toolTip() or ""
+
+        # Collect data and validate
+        if not self.uniqueIdNumberField.text().strip():
+            QMessageBox.warning(self, "Validation Error", "ID number cannot be empty.")
+            return
+
+        if (
+            not self.firstNameField.text().strip()
+            or not self.lastNameField.text().strip()
+        ):
+            QMessageBox.warning(
+                self, "Validation Error", "First and last name cannot be empty."
+            )
+            return
+
         volunteer = Volunteer(
             volunteerID,
-            self.uniqueIdNumberField.text(),
-            self.firstNameField.text(),
-            self.lastNameField.text(),
-            self.phoneField.text(),
-            self.city.text(),
-            self.street.text(),
-            self.houseNumber.text(),
-            "",
+            uniqueIdNumber=self.uniqueIdNumberField.text(),
+            firstName=self.firstNameField.text(),
+            lastName=self.lastNameField.text(),
+            phone=self.phoneField.text(),
+            city=self.city.text(),
+            street=self.street.text(),
+            houseNumber=self.houseNumber.text(),
+            imageUrl=image_path,
+            latitude=0,
+            longitude=0,
         )
-        # Handle saving logic here
+        self.save_volunteer_signal.emit(volunteer)
         self.close()
 
     def set_volunteer(self, volunteer):

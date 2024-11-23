@@ -1,3 +1,4 @@
+from mimetypes import guess_type
 import requests
 from entities.volunteer import Volunteer
 from io import BytesIO
@@ -48,31 +49,61 @@ class VolunteersModel:
             volunteers.append((volunteer, image))
         return volunteers
 
-    def addVolunteer(self, volunteer):
-        """Save the volunteer to the database or remote service."""
+    def addVolunteer(self, volunteer: Volunteer):
+        print(
+            "Adding volunteer:",
+            volunteer.id,
+            volunteer.firstName,
+            volunteer.lastName,
+            volunteer.imageUrl,
+            volunteer.geoPoint.latitude,
+            volunteer.geoPoint.longitude,
+            volunteer.phone,
+            volunteer.city,
+            volunteer.street,
+            volunteer.houseNumber,
+        )
         url = "http://localhost:7008/api/Volunteers/Add"
-        payload = {
-            "id": volunteer.id,
-            "uniqueIdNumber": volunteer.uniqueIdNumber,
-            "firstName": volunteer.firstName,
-            "lastName": volunteer.lastName,
-            "phone": volunteer.phone,
-            "latitude": volunteer.geoPoint.latitude,
-            "longitude": volunteer.geoPoint.longitude,
-            "city": volunteer.city,
-            "street": volunteer.street,
-            "houseNumber": volunteer.houseNumber,
-            "imageUrl": volunteer.imageUrl,
-        }
-        headers = {"Content-Type": "application/json"}
 
-        response = requests.post(url, json=payload, headers=headers)
-        if response.status_code == 201:  # Assuming 201 indicates success
-            return response.json().get("id", 0)
-        else:
-            raise Exception(
-                f"Failed to save volunteer: {response.status_code} - {response.text}"
-            )
+        # Prepare the volunteer data as a dictionary
+        volunteer_data = {
+            "Id": volunteer.id,
+            "UniqueIdNumber": volunteer.uniqueIdNumber,
+            "FirstName": volunteer.firstName,
+            "LastName": volunteer.lastName,
+            "Phone": volunteer.phone,
+            "Country": "ישראל",
+            "City": volunteer.city,
+            "Street": volunteer.street,
+            "HouseNumber": volunteer.houseNumber,
+            "PhotoUrl": volunteer.imageUrl,
+            "Latitude": volunteer.geoPoint.latitude,
+            "Longitude": volunteer.geoPoint.longitude,
+        }
+
+        # Prepare the photo file if provided
+        files = (
+            {"Photo": open(volunteer.imageUrl, "rb")} if volunteer.imageUrl else None
+        )
+
+        try:
+            # Send the POST request with form-data
+            response = requests.post(url, data=volunteer_data, files=files)
+
+            # Handle the response
+            if response.status_code == 201:
+                print("Volunteer added successfully:", response.json())
+            else:
+                print(
+                    f"Failed to add volunteer: {response.status_code}, {response.text}"
+                )
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+        finally:
+            # Close the file if it was opened
+            if files:
+                files["Photo"].close()
 
     def update_volunteer(self, volunteer):
         url = "http://localhost:7008/api/Volunteers/Update/{volunteer.id}"

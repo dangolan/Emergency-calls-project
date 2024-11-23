@@ -1,18 +1,22 @@
 from PySide6.QtCore import QObject, Signal
+from PySide6.QtWidgets import QMessageBox
 from worker import Worker
 
 
 class VolunteersListController(QObject):
     errorSignal = Signal(str)
 
-    def __init__(self, volunteersListView=None, volunteersModel=None, shellView=None):
+    def __init__(
+        self, volunteersListView=None, volunteersModel=None, addVolunteerView=None
+    ):
         super().__init__()
         print("VolunteersListController")
         self.view = volunteersListView
+        self.add_volunteer_view = addVolunteerView
         self.model = volunteersModel
         self.view.remove_volunteer_signal.connect(self.remove_volunteer)
         self.view.update_volunteer_signal.connect(self.update_volunteer)
-        self.view.addVolunteerClicked.connect(self.add_volunteer)
+        self.add_volunteer_view.save_volunteer_signal.connect(self.save_volunteer)
         self.load_volunteer()
 
     def load_volunteer(self):
@@ -35,12 +39,15 @@ class VolunteersListController(QObject):
     def remove_volunteer(self, volunteer):
         # Create a worker to call the async function
         worker = Worker(lambda: self.model.delete_volunteer(volunteer))
-        worker.result_signal.connect(self.view.delete_volunteer)
+        worker.result_signal.connect(self.view.delete_volunteer(volunteer.id))
         worker.error_signal.connect(self.error)
         worker.start()
+        # Proceed to save the volunteer
 
-    def add_volunteer(self, volunteer):
-        worker = Worker(lambda: self.model.add_volunteer(volunteer))
+    def save_volunteer(self, volunteer):
+        """Save a volunteer after fetching coordinates."""
+        # Save volunteer asynchronously
+        worker = Worker(lambda: self.model.addVolunteer(volunteer))
         worker.result_signal.connect(self.view.add_volunteer)
         worker.error_signal.connect(self.error)
         worker.start()

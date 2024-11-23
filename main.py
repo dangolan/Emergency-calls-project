@@ -64,7 +64,7 @@ def main():
     )
     eventContoller.add_observer_to_show_event(shellController.show_map_and_event)
     eventContoller.errorSignal.connect(shellController.error)
-    simulator = EmergencyEventSimulator(5)
+    simulator = EmergencyEventSimulator(100)
     simulator.add_event.connect(eventContoller.add_event)
     simulator.start()
 

@@ -1,5 +1,5 @@
 import sys
-from PySide6.QtWidgets import QApplication, QWidget
+from PySide6.QtWidgets import QApplication
 from views.mapView import MapView
 from views.eventListView import EventListView
 from views.volunteersListView import VolunteersListView
@@ -42,9 +42,11 @@ def main():
         newEventsView,
         addVolunteerView,
     )
+
     # Create models
     eventsModel = EventsModel()
     volunteersModel = VolunteersModel()
+
     # Create controllers
     shellController = ShellController(shellView)
     eventContoller = EventsController(
@@ -58,18 +60,28 @@ def main():
     volunteerController = VolunteersListController(
         volunteersListView, volunteersModel, addVolunteerView
     )
-    volunteerController.errorSignal.connect(shellController.error)
+
+    # Connect signals for switching views
+    # Connect the swich view in the shellController to the volunteerController
     volunteerController.add_observer_to_add_volunteer(
         shellController.show_add_volunteer
     )
+    # add observer for switching views
     eventContoller.add_observer_to_show_event(shellController.show_map_and_event)
+
+    # Connect the error signals
+    # Connect the error func in shellController to the error signal in eventController
+    volunteerController.errorSignal.connect(shellController.error)
+    # Connect the error func in shellController to the error signal in eventController
     eventContoller.errorSignal.connect(shellController.error)
+
+    # Create an event simulator
     simulator = EmergencyEventSimulator(100)
+    # Connect the add_event signal to the eventController
     simulator.add_event.connect(eventContoller.add_event)
     simulator.start()
 
     shellView.show()
-
     sys.exit(app.exec())
 
 

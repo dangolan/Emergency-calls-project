@@ -5,7 +5,6 @@ from PySide6.QtWidgets import (
     QLabel,
     QListWidget,
     QListWidgetItem,
-    QLineEdit,
     QSizePolicy,
 )
 from PySide6.QtCore import Qt
@@ -20,7 +19,7 @@ class ClosestVolunteersView(QWidget):
         super().__init__()
 
         # Create the main vertical layout
-        mainLayout = QVBoxLayout(self)        
+        mainLayout = QVBoxLayout(self)
 
         # Create a QListWidget to hold the list of volunteers
         self.listWidget = QListWidget()
@@ -34,7 +33,7 @@ class ClosestVolunteersView(QWidget):
         self.setLayout(mainLayout)
         self.resize(400, 500)
 
-        #set preloader
+        # set preloader
         self.preloader = QMovie("images/volunteers.gif")
         self.preloaderLabel = QLabel()
         self.preloaderLabel.setMovie(self.preloader)
@@ -42,21 +41,22 @@ class ClosestVolunteersView(QWidget):
         mainLayout.addWidget(self.preloaderLabel)
         self.preloaderLabel.hide()
 
-
         stylesheet = self.load_stylesheet("views/styles/closestVolunteers.qss")
         self.setStyleSheet(stylesheet)
-
+    
+    # show preloader when loading volunteers
     def show_preloader(self):
         self.preloaderLabel.show()
         self.preloader.start()
         self.listWidget.hide()
 
+    # hide preloader when volunteers are loaded
     def hide_preloader(self):
         self.preloaderLabel.hide()
         self.preloader.stop()
         self.listWidget.show()
 
-    
+    # add volunteer to the view
     def add_volunteers(self, eventVolunteers):
         self.itemsData.clear()  # Reset the items data list
 
@@ -93,7 +93,11 @@ class ClosestVolunteersView(QWidget):
 
                     # Set the rounded image
                     photoLabel = QLabel()
-                    photoLabel.setPixmap(roundedPixmap.scaled(40, 40, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+                    photoLabel.setPixmap(
+                        roundedPixmap.scaled(
+                            40, 40, Qt.KeepAspectRatio, Qt.SmoothTransformation
+                        )
+                    )
                     photoLabel.setObjectName("photoLabel")
                 else:
                     photoLabel = QLabel("No Image")
@@ -104,11 +108,13 @@ class ClosestVolunteersView(QWidget):
             volunteerLayout.addWidget(photoLabel)
 
             # Volunteer details (left side)
-            details = f"ID: {volunteer.uniqueIdNumber}\n" \
-                f"{volunteer.firstName} {volunteer.lastName}\n" \
-                    f"{volunteer.city} {volunteer.street} {volunteer.houseNumber}\n" \
-                    f"Distance: {distanceKm:.2f} km\n" \
-                    f"Duration: {durationMinutes:.2f} min"
+            details = (
+                f"ID: {volunteer.uniqueIdNumber}\n"
+                f"{volunteer.firstName} {volunteer.lastName}\n"
+                f"{volunteer.city} {volunteer.street} {volunteer.houseNumber}\n"
+                f"Distance: {distanceKm:.2f} km\n"
+                f"Duration: {durationMinutes:.2f} min"
+            )
             detailsLabel = QLabel(details)
             detailsLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
 
@@ -120,17 +126,24 @@ class ClosestVolunteersView(QWidget):
 
             # Create a QListWidgetItem and set its custom widget
             listItem = QListWidgetItem()
-            listItem.setSizeHint(volunteerWidget.sizeHint())  # Set the size of the item to match the widget
+            listItem.setSizeHint(
+                volunteerWidget.sizeHint()
+            )  # Set the size of the item to match the widget
             self.listWidget.addItem(listItem)  # Add item to the list
-            self.listWidget.setItemWidget(listItem, volunteerWidget)  # Set the widget for the list item
+            self.listWidget.setItemWidget(
+                listItem, volunteerWidget
+            )  # Set the widget for the list item
 
             # Store the volunteer's text and details for filtering
-            self.itemsData.append((f"{volunteer.firstName} {volunteer.lastName}", details))
+            self.itemsData.append(
+                (f"{volunteer.firstName} {volunteer.lastName}", details)
+            )
 
-
-
+    # load stylesheet
     def load_stylesheet(self, filename):
         with open(filename, "r") as file:
             return file.read()
+    
+    # clear the the volunteers list
     def clear(self):
         self.listWidget.clear()

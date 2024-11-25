@@ -1,11 +1,9 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
-from PySide6.QtCore import Qt
-
 
 class EventDetailsView(QWidget):
     def __init__(self):
         super().__init__()
-
+        
         # create a layout
         self.layout = QVBoxLayout()
         self.label = QLabel()
@@ -15,7 +13,6 @@ class EventDetailsView(QWidget):
 
         # Load custom stylesheet (if exists)
         self.load_stylesheet("views/styles/newEvent.qss")
-
 
     def update_label(self, event):
         # Update label with new event details

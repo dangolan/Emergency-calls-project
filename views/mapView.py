@@ -9,8 +9,9 @@ import random
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QMovie
 from PySide6.QtWidgets import QLabel
-from folium.features import CustomIcon
-
+from entities.event import Event
+from entities.eventVolunteer import EventVolunteer
+from typing import List
 
 class MapView(QWidget):
     def __init__(self):
@@ -50,14 +51,27 @@ class MapView(QWidget):
 
 
 
-    def draw_map(self, eventVolunteers, eventLat, eventLon):
+    # Draw the map with the event point and volunteer routes
+    def draw_map(self, eventVolunteers : List[EventVolunteer], event: Event):
+
+        if not event:
+            print("No event to display on the map")
+            m = folium.Map(location=[32.0853, 34.7818], zoom_start=10)
+            data = io.BytesIO()
+            m.save(data, close_file=False)
+            mapHtml = data.getvalue().decode()
+            self.webView.setHtml(mapHtml)
+            return
         # Create the map
-        m = folium.Map(location=[eventLat, eventLon], zoom_start=12)
+        eventLat = event.geoPoint.latitude
+        eventLon = event.geoPoint.longitude
+
+        m = folium.Map(location=[eventLat, eventLon], zoom_start=10)
 
         # Add a marker for the event point in red
         folium.Marker(
             location=[eventLat, eventLon],
-            popup="Event",
+            popup=event.description,
             icon=folium.Icon(color='red')
         ).add_to(m)
 
@@ -91,7 +105,7 @@ class MapView(QWidget):
 
             # Extract volunteer details
             volunteer = eventVolunteer.volunteer
-            fullName = f"{volunteer.firstName} {volunteer.lastName}"
+            volunteerDetails = f"fiestName: {volunteer.firstName}\n lastName: {volunteer.lastName}\n id: {volunteer.uniqueIdNumber}"
             photoUrl = volunteer.imageUrl
 
             # HTML content for the custom icon (image inside a circular background)
@@ -105,7 +119,7 @@ class MapView(QWidget):
             # Add the custom marker with the volunteer's photo and name in the popup
             folium.Marker(
                 location=[coordinates[0][1], coordinates[0][0]],  # Starting point of the route
-                popup=fullName,  # Display the name in the popup
+                popup=volunteerDetails,  # Display the name in the popup
                 icon=icon  # Custom icon with the volunteer's image
             ).add_to(m)
 

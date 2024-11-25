@@ -1,3 +1,4 @@
+from typing import List
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -14,12 +15,14 @@ from PySide6.QtCore import Qt, Signal, QSize
 import requests
 from entities.volunteer import Volunteer
 from PySide6.QtCore import QTimer
+from entities.listVolunteer import ListVolunteer
 
 
 class VolunteersListView(QWidget):
     # Define signals to emit the volunteer for remove and update actions
-    remove_volunteer_signal = Signal(Volunteer)
-    update_volunteer_signal = Signal(Volunteer)
+    removeVolunteerSignal = Signal(Volunteer)
+    updateVolunteerSignal = Signal(Volunteer)
+    updateVolunteerClicked = Signal()
     addVolunteerClicked = Signal()
 
     def __init__(self):
@@ -97,7 +100,7 @@ class VolunteersListView(QWidget):
         self.notificationLabel.show()
         QTimer.singleShot(5000, lambda: self.notificationLabel.hide())
 
-    def add_volunteer(self, volunteer: Volunteer, image: QPixmap):
+    def add_volunteer_to_list(self, volunteer: Volunteer, image: QPixmap):
         # Create a custom widget to hold volunteer information
         item_widget = QWidget()
         main_layout = QHBoxLayout(item_widget)
@@ -165,10 +168,10 @@ class VolunteersListView(QWidget):
         self.volunteerList.addItem(list_item)
         self.volunteerList.setItemWidget(list_item, item_widget)
 
-    def set_volunteers(self, volunteers):
+    def set_volunteers(self, volunteers : List[ListVolunteer]):
         self.volunteers = volunteers
-        for volunteer in volunteers:
-            self.add_volunteer(volunteer[0], volunteer[1])
+        for listVolunteer in volunteers:
+            self.add_volunteer_to_list(listVolunteer.volunteer, listVolunteer.img)
 
     def perform_search(self):
         search_term = self.searchLineEdit.text().strip()
@@ -180,27 +183,27 @@ class VolunteersListView(QWidget):
         # Filter based on search type
         if search_type == "ID":
             filtered_volunteers = [
-                v for v in self.volunteers if search_term in v[0].uniqueIdNumber
+                v for v in self.volunteers if search_term in v.volunteer.uniqueIdNumber
             ]
         elif search_type == "Address":
             filtered_volunteers = [
                 v
                 for v in self.volunteers
-                if search_term in f"{v[0].street} {v[0].houseNumber} {v[0].city}"
+                if search_term in f"{v.volunteer.street} {v.volunteer.houseNumber} {v.volunteer.city}"
             ]
         elif search_type == "Name":
             filtered_volunteers = [
                 v
                 for v in self.volunteers
-                if search_term.lower() in v[0].firstName.lower()
-                or search_term.lower() in v[0].lastName.lower()
+                if search_term.lower() in v.volunteer.firstName.lower()
+                or search_term.lower() in v.volunteer.lastName.lower()
             ]
         else:
             filtered_volunteers = self.volunteers
 
         # Display filtered volunteers
         for volunteer in filtered_volunteers:
-            self.add_volunteer(volunteer[0], volunteer[1])
+            self.add_volunteer_to_list(volunteer.volunteer, volunteer.img)
 
     def edit_search_line_placeholder(self):
         self.searchLineEdit.clear()
@@ -215,23 +218,39 @@ class VolunteersListView(QWidget):
             self.searchLineEdit.setPlaceholderText("Search")
 
     def emit_remove(self, volunteer):
-        self.remove_volunteer_signal.emit(volunteer)
+        self.removeVolunteerSignal.emit(volunteer)
 
     def emit_update(self, volunteer):
-        self.update_volunteer_signal.emit(volunteer)
+        self.updateVolunteerSignal.emit(volunteer)
+        self.updateVolunteerClicked.emit()
 
     def emit_add(self):
         self.addVolunteerClicked.emit()
+    
+    def add_volunteer(self, volunteer: ListVolunteer):
+        self.show_notification("Volunteer added successfully")
+        self.volunteers.append(volunteer)
+        self.add_volunteer_to_list(volunteer.volunteer, volunteer.img)
 
     def delete_volunteer(self, id):
         self.show_notification("Volunteer deleted successfully")
         self.volunteerList.clear()
         for i in range(len(self.volunteers)):
-            if self.volunteers[i][0].id == id:
+            if self.volunteers[i].volunteer.id == id:
                 self.volunteers.pop(i)
                 break
         for volunteer in self.volunteers:
-            self.add_volunteer(volunteer[0], volunteer[1])
+            self.add_volunteer_to_list(volunteer.volunteer, volunteer.img)
+
+    def update_volunteer(self, volunteer: ListVolunteer):
+        self.show_notification("Volunteer updated successfully")
+        self.volunteerList.clear()
+        for i in range(len(self.volunteers)):
+            if self.volunteers[i].volunteer.id == volunteer.volunteer.id:
+                self.volunteers[i] = volunteer
+                break
+        for volunteer in self.volunteers:
+            self.add_volunteer_to_list(volunteer.volunteer, volunteer.img)
 
     def load_stylesheet(self, filename):
         with open(filename, "r") as file:

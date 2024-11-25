@@ -3,12 +3,15 @@ import requests
 from entities.volunteer import Volunteer
 from io import BytesIO
 from PySide6.QtGui import QPixmap
+from entities.listVolunteer import ListVolunteer
 
 
 class VolunteersModel:
+    # volunteers model
     def __init__(self):
         pass
 
+    # get all volunteers from server
     def get_all_volunteers(self):
         url = "http://localhost:7008/api/Volunteers/GetAll"
         response = requests.get(url)
@@ -24,50 +27,28 @@ class VolunteersModel:
                 f"Failed to get volunteers. Status code: {response.status_code} - {response.text}"
             )
 
-    def parse_response_to_volunteers(self, response_data):
-        volunteers = []
-        for item in response_data:
-            volunteer = Volunteer(
-                id=item["id"],
-                uniqueIdNumber=item["uniqueIdNumber"],
-                firstName=item["firstName"],
-                lastName=item["lastName"],
-                phone=item["phone"],
-                latitude=item["latitude"],
-                longitude=item["longitude"],
-                city=item["city"],
-                street=item["street"],
-                houseNumber=item["houseNumber"],
-                imageUrl=item["photoUrl"],
+    # get volunteer by id
+    def get_volunteer(self, id):
+        url = f"http://localhost:7008/api/Volunteers/Get/{id}"
+        response = requests.get(url)
+        if response.status_code == 200:
+            response_data = response.json()
+            print(f"Fetched volunteer with ID: {id} from server.")
+            return self.parse_to_volunteer(response_data)
+        else:
+            print(
+                f"Failed to get volunteer with ID: {id}. Status code: {response.status_code}"
             )
-            # fach img to pixmap object
-            response = requests.get(volunteer.imageUrl)
-            if response.status_code == 200:
-                pixmap = QPixmap()
-                pixmap.loadFromData(BytesIO(response.content).read())
-                image = pixmap
-            volunteers.append((volunteer, image))
-        return volunteers
+            raise Exception(
+                f"Failed to get volunteer with ID: {id}. Status code: {response.status_code} - {response.text}"
+            )
 
-    def addVolunteer(self, volunteer: Volunteer):
-        print(
-            "Adding volunteer:",
-            volunteer.id,
-            volunteer.firstName,
-            volunteer.lastName,
-            volunteer.imageUrl,
-            volunteer.geoPoint.latitude,
-            volunteer.geoPoint.longitude,
-            volunteer.phone,
-            volunteer.city,
-            volunteer.street,
-            volunteer.houseNumber,
-        )
+    # add volunteer to server
+    def add_volunteer(self, volunteer: Volunteer):
         url = "http://localhost:7008/api/Volunteers/Add"
-
         # Prepare the volunteer data as a dictionary
         volunteer_data = {
-            "Id": volunteer.id,
+            "Id": 0,
             "UniqueIdNumber": volunteer.uniqueIdNumber,
             "FirstName": volunteer.firstName,
             "LastName": volunteer.lastName,
@@ -76,46 +57,78 @@ class VolunteersModel:
             "City": volunteer.city,
             "Street": volunteer.street,
             "HouseNumber": volunteer.houseNumber,
-            "PhotoUrl": volunteer.imageUrl,
-            "Latitude": volunteer.geoPoint.latitude,
-            "Longitude": volunteer.geoPoint.longitude,
+            "PhotoUrl": "none",
+            "Latitude": 0,
+            "Longitude": 0,
         }
 
-        # Prepare the photo file if provided
-        files = (
-            {"Photo": open(volunteer.imageUrl, "rb")} if volunteer.imageUrl else None
-        )
-
-        try:
+        files = None
+        if volunteer.imageUrl:
+            try:
+                files = {
+                    "Photo": ("photo.png", open(volunteer.imageUrl, "rb"), "image/png")
+                }
+            except FileNotFoundError:
+                raise FileNotFoundError(
+                    f"Error: The file at '{volunteer.imageUrl}' was not found."
+                )
+            finally:
+                # Close the file if it was opened
+                if "Photo" in files and hasattr(files["Photo"], "close"):
+                    files["Photo"].close()
             # Send the POST request with form-data
             response = requests.post(url, data=volunteer_data, files=files)
-
             # Handle the response
             if response.status_code == 201:
-                print("Volunteer added successfully:", response.json())
+                print("Volunteer added successfully:")
+                return self.parse_to_volunteer(response.json())
             else:
-                print(
-                    f"Failed to add volunteer: {response.status_code}, {response.text}"
+                raise Exception(
+                    f"Failed to get volunteers. Status code: {response.status_code} - {response.text}"
                 )
 
-        except Exception as e:
-            print(f"An error occurred: {e}")
-        finally:
-            # Close the file if it was opened
-            if files:
-                files["Photo"].close()
-
+    # update volunteer
     def update_volunteer(self, volunteer):
-        url = "http://localhost:7008/api/Volunteers/Update/{volunteer.id}"
-        response = requests.get(url)
+        url = f"http://localhost:7008/api/Volunteers/Update/{volunteer.id}"
+        volunteer_data = {
+            "Id": 0,
+            "UniqueIdNumber": volunteer.uniqueIdNumber,
+            "FirstName": volunteer.firstName,
+            "LastName": volunteer.lastName,
+            "Phone": volunteer.phone,
+            "Country": "ישראל",
+            "City": volunteer.city,
+            "Street": volunteer.street,
+            "HouseNumber": volunteer.houseNumber,
+            "PhotoUrl": "none",
+            "Latitude": 0,
+            "Longitude": 0,
+        }
+        if volunteer.imageUrl:
+            try:
+                files = {
+                    "Photo": ("photo.png", open(volunteer.imageUrl, "rb"), "image/png")
+                }
+            except FileNotFoundError:
+                raise FileNotFoundError(
+                    f"Error: The file at '{volunteer.imageUrl}' was not found."
+                )
+            finally:
+                # Close the file if it was opened
+                if "Photo" in files and hasattr(files["Photo"], "close"):
+                    files["Photo"].close()
+            response = requests.put(url, data=volunteer_data, files=files)
+        else:
+            response = requests.put(url, data=volunteer_data)
         if response.status_code == 204:
             print(f"Updated volunteer with ID: {volunteer.id} successfully.")
-            return volunteer.id
+            return self.get_volunteer(volunteer.id)
         else:
             raise Exception(
                 f"Failed to update volunteer. Status code: {response.status_code} - {response.text}"
             )
 
+    # delete volunteer
     def delete_volunteer(self, volunteer):
         url = f"http://localhost:7008/api/Volunteers/Delete/{volunteer.id}"
         response = requests.delete(url)
@@ -126,3 +139,32 @@ class VolunteersModel:
             raise Exception(
                 f"Failed to delete volunteer. Status code: {response.status_code} - {response.text}"
             )
+
+    # parse response to volunteers
+    def parse_response_to_volunteers(self, response_data):
+        volunteers = []
+        for item in response_data:
+            volunteers.append(self.parse_to_volunteer(item))
+        return volunteers
+
+    # parse response to volunteer object
+    def parse_to_volunteer(self, response_data):
+        volunteer = Volunteer(
+            id=response_data["id"],
+            uniqueIdNumber=response_data["uniqueIdNumber"],
+            firstName=response_data["firstName"],
+            lastName=response_data["lastName"],
+            phone=response_data["phone"],
+            latitude=response_data["latitude"],
+            longitude=response_data["longitude"],
+            city=response_data["city"],
+            street=response_data["street"],
+            houseNumber=response_data["houseNumber"],
+            imageUrl=response_data["photoUrl"],
+        )
+        imgResponse = requests.get(volunteer.imageUrl)
+        if imgResponse.status_code == 200:
+            pixmap = QPixmap()
+            pixmap.loadFromData(BytesIO(imgResponse.content).read())
+            image = pixmap
+        return ListVolunteer(volunteer, image)

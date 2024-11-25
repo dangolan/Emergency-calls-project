@@ -11,22 +11,22 @@ class VolunteersListController(QObject):
     ):
         super().__init__()
         print("VolunteersListController")
-        self.view = volunteersListView
-        self.add_volunteer_view = addVolunteerView
+        self.volunteersListView = volunteersListView
+        self.addVolunteerView = addVolunteerView
         self.model = volunteersModel
-        self.view.remove_volunteer_signal.connect(self.remove_volunteer)
-        self.view.update_volunteer_signal.connect(self.update_volunteer)
-        self.add_volunteer_view.save_volunteer_signal.connect(self.save_volunteer)
+        self.volunteersListView.removeVolunteerSignal.connect(self.remove_volunteer)
+        self.volunteersListView.updateVolunteerSignal.connect(self.addVolunteerView.set_volunteer)
+        self.addVolunteerView.saveVolunteerSignal.connect(self.add_update_volunteer)
         self.load_volunteer()
 
     def load_volunteer(self):
         # Call the async function and wait for the result
-        self.view.show_preloader()
+        self.volunteersListView.show_preloader()
 
         def get_vlounteer(volunteers):
-            self.view.hide_preloader()
+            self.volunteersListView.hide_preloader()
             if volunteers:
-                self.view.set_volunteers(volunteers)
+                self.volunteersListView.set_volunteers(volunteers)
             else:
                 self.error("No volunteers found")
 
@@ -39,27 +39,27 @@ class VolunteersListController(QObject):
     def remove_volunteer(self, volunteer):
         # Create a worker to call the async function
         worker = Worker(lambda: self.model.delete_volunteer(volunteer))
-        worker.result_signal.connect(self.view.delete_volunteer(volunteer.id))
+        worker.result_signal.connect(self.volunteersListView.delete_volunteer(volunteer.id))
         worker.error_signal.connect(self.error)
         worker.start()
         # Proceed to save the volunteer
 
-    def save_volunteer(self, volunteer):
-        """Save a volunteer after fetching coordinates."""
+    def add_update_volunteer(self, volunteer):
         # Save volunteer asynchronously
-        worker = Worker(lambda: self.model.addVolunteer(volunteer))
-        worker.result_signal.connect(self.view.add_volunteer)
-        worker.error_signal.connect(self.error)
-        worker.start()
-
-    def update_volunteer(self, volunteer):
-        worker = Worker(lambda: self.model.update_volunteer(volunteer))
-        worker.result_signal.connect(self.view.update_volunteer)
-        worker.error_signal.connect(self.error)
-        worker.start()
+        if volunteer.id == 0:
+            worker = Worker(lambda: self.model.add_volunteer(volunteer))
+            worker.result_signal.connect(self.volunteersListView.add_volunteer)
+            worker.error_signal.connect(self.error)
+            worker.start()
+        else:
+            worker = Worker(lambda: self.model.update_volunteer(volunteer))
+            worker.result_signal.connect(self.volunteersListView.update_volunteer)
+            worker.error_signal.connect(self.error)
+            worker.start()
 
     def add_observer_to_add_volunteer(self, action):
-        self.view.addVolunteerClicked.connect(action)
+        self.volunteersListView.addVolunteerClicked.connect(action)
+        self.volunteersListView.updateVolunteerClicked.connect(action)
 
     def error(self, message):
         print(message)

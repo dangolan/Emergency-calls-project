@@ -15,11 +15,10 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QDragEnterEvent, QDropEvent, QPixmap
 from entities.volunteer import Volunteer
 from PySide6.QtCore import Signal
-from entities.volunteer import GeoPoint  # Import GeoPoint
-
+import re
 
 class AddVolunteerView(QWidget):
-    save_volunteer_signal = Signal(Volunteer)
+    saveVolunteerSignal = Signal(Volunteer)
 
     def __init__(self):
         super().__init__()
@@ -29,11 +28,7 @@ class AddVolunteerView(QWidget):
         mainLayout = QVBoxLayout(self)
         # Form layout
         formLayout = QFormLayout()
-        # header label
-        headerLabel = QLabel("Add Volunteer")
-        # set the label to center
-        headerLabel.setAlignment(Qt.AlignCenter)
-        mainLayout.addWidget(headerLabel)
+    
         # Add form fields
         self.uniqueIdNumberField = QLineEdit()
         self.firstNameField = QLineEdit()
@@ -82,24 +77,25 @@ class AddVolunteerView(QWidget):
         cancelButton = QPushButton("Cancel")
         cancelButton.setObjectName("cancel")
         buttonLayout.addWidget(cancelButton)
-        cancelButton.clicked.connect(self.close)
+        cancelButton.clicked.connect(self.close_window)
 
         saveButton = QPushButton("Save")
         saveButton.setObjectName("save")
         buttonLayout.addWidget(saveButton)
         mainLayout.addLayout(buttonLayout)
-        saveButton.clicked.connect(self.saveVolunteer)
+        saveButton.clicked.connect(self.save_volunteer)
+        #set volunter id
+        self.volunteerID = 0
 
         # set style sheet
         self.setStyleSheet(self.loadStyleSheet("views/styles/addVolunteer.qss"))
 
+
     def dragEnterEvent(self, event: QDragEnterEvent):
-        """Handle drag enter event."""
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
 
     def dropEvent(self, event: QDropEvent):
-        """Handle drop event."""
         if event.mimeData().hasUrls():
             file_path = event.mimeData().urls()[0].toLocalFile()
             if file_path.lower().endswith((".png")):
@@ -112,42 +108,97 @@ class AddVolunteerView(QWidget):
                 QMessageBox.warning(
                     self, "Invalid File", "Please drop a valid image file."
                 )
+    def remove_img(self):
+        # Explicitly clear the pixmap
+        self.imageLabel.setPixmap(QPixmap())
 
-    def saveVolunteer(self):
-        volunteerID = 0
+        # Clear any text and reset the label
+        self.imageLabel.clear()
+        self.imageLabel.setText("Drag and drop an image here")
+        self.imageLabel.setStyleSheet("border: 2px dashed #aaaaaa; padding: 2px;")
+        self.imageLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.imageLabel.setFixedHeight(100)
+        self.imageLabel.setToolTip("")  # Clear the tooltip
+
+
+    def save_volunteer(self):
         image_path = self.imageLabel.toolTip() or ""
 
-        # Collect data and validate
-        if not self.uniqueIdNumberField.text().strip():
-            QMessageBox.warning(self, "Validation Error", "ID number cannot be empty.")
+        # Retrieve input values
+        uniqueIdNumber = self.uniqueIdNumberField.text().strip()
+        firstName = self.firstNameField.text().strip()
+        lastName = self.lastNameField.text().strip()
+        phone = self.phoneField.text().strip()
+        city = self.city.text().strip()
+        street = self.street.text().strip()
+        houseNumber = self.houseNumber.text().strip()
+
+        # Input validation
+        if not uniqueIdNumber.isdigit():
+            QMessageBox.critical(self, "Invalid Input", "Unique ID Number must contain only digits.")
             return
 
-        if (
-            not self.firstNameField.text().strip()
-            or not self.lastNameField.text().strip()
-        ):
-            QMessageBox.warning(
-                self, "Validation Error", "First and last name cannot be empty."
-            )
+        if not re.match("^[a-zA-Z]+$", firstName):
+            QMessageBox.critical(self, "Invalid Input", "First Name must contain only English letters.")
             return
 
+        if not re.match("^[a-zA-Z]+$", lastName):
+            QMessageBox.critical(self, "Invalid Input", "Last Name must contain only English letters.")
+            return
+
+        if not phone.isdigit():
+            QMessageBox.critical(self, "Invalid Input", "Phone number must contain only digits.")
+            return
+
+        if not re.match("^[א-ת\s]+$", city):
+            QMessageBox.critical(self, "Invalid Input", "City must contain only Hebrew letters.")
+            return
+
+        if not re.match("^[א-ת\s]+$", street):
+            QMessageBox.critical(self, "Invalid Input", "Street must contain only Hebrew letters.")
+            return
+        if not houseNumber.isdigit():
+            QMessageBox.critical(self, "Invalid Input", "House number must contain only digits.")
+            return
+        if self.volunteerID == 0:
+            if not image_path:
+                QMessageBox.critical(self, "Invalid Input", "Please upload an image.")
+                return
+
+        # Create Volunteer instance
         volunteer = Volunteer(
-            volunteerID,
-            uniqueIdNumber=self.uniqueIdNumberField.text(),
-            firstName=self.firstNameField.text(),
-            lastName=self.lastNameField.text(),
-            phone=self.phoneField.text(),
-            city=self.city.text(),
-            street=self.street.text(),
-            houseNumber=self.houseNumber.text(),
+            self.volunteerID,
+            uniqueIdNumber=uniqueIdNumber,
+            firstName=firstName,
+            lastName=lastName,
+            phone=phone,
+            city=city,
+            street=street,
+            houseNumber=houseNumber,
             imageUrl=image_path,
             latitude=0,
             longitude=0,
         )
-        self.save_volunteer_signal.emit(volunteer)
+
+        # Emit signal and close the window
+        self.saveVolunteerSignal.emit(volunteer)
+        self.close_window()
+
+    def close_window(self):
+        self.uniqueIdNumberField.clear()
+        self.firstNameField.clear()
+        self.lastNameField.clear()
+        self.phoneField.clear()
+        self.city.clear()
+        self.street.clear()
+        self.houseNumber.clear()
+        self.remove_img()      
+        self.volunteerID = 0
         self.close()
 
+
     def set_volunteer(self, volunteer):
+        self.volunteerID = volunteer.id
         self.uniqueIdNumberField.setText(volunteer.uniqueIdNumber)
         self.firstNameField.setText(volunteer.firstName)
         self.lastNameField.setText(volunteer.lastName)
@@ -155,15 +206,6 @@ class AddVolunteerView(QWidget):
         self.city.setText(volunteer.city)
         self.street.setText(volunteer.street)
         self.houseNumber.setText(volunteer.houseNumber)
-
-        # Set the image
-        if volunteer.imageUrl:
-            pixmap = QPixmap()
-            pixmap.loadFromData(volunteer.imageUrl)
-            self.imageLabel.setPixmap(
-                pixmap.scaled(self.imageLabel.size(), Qt.KeepAspectRatio)
-            )
-            self.imageLabel.setToolTip(volunteer.imageUrl)
 
     def loadStyleSheet(self, name):
         with open(name, "r") as file:

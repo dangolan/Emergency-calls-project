@@ -5,8 +5,7 @@ from PySide6.QtWidgets import (
     QListWidget,
     QListWidgetItem,
     QPushButton,
-    QHBoxLayout,
-    QMessageBox,
+    QHBoxLayout
 )
 from PySide6.QtCore import Qt
 from entities.event import Event
@@ -139,14 +138,6 @@ class EventListView(QWidget):
         return itemWidget
 
     def show_item(self, event: Event, show_button: QPushButton):
-        print(
-            f"Showing event details:\n"
-            f"ID: {event.id}\n"
-            f"Description: {event.description}\n"
-            f"Address: {event.address}\n"
-            f"Time: {event.time}\n"
-            f"Status: {event.status}\n"
-        )
         event.status = "Handled"
         show_button.setText("Show again")
         show_button.setStyleSheet("background-color: #03a109; width: 80px;")

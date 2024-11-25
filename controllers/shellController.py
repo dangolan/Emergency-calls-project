@@ -28,7 +28,7 @@ class ShellController:
     # Define error method for status bar
     def error(self, message):
         # Set status bar red
-        self.shellView.statusBar.setStyleSheet("background-color: red; color: white;")
+        self.shellView.statusBar.setStyleSheet("background-color: red; color: black;")
         self.shellView.statusBar.showMessage(message)
 
         # Use a QTimer with a lambda to reset the style after 5 seconds

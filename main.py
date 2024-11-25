@@ -76,7 +76,7 @@ def main():
     eventContoller.errorSignal.connect(shellController.error)
 
     # Create an event simulator
-    simulator = EmergencyEventSimulator(100)
+    simulator = EmergencyEventSimulator(10)
     # Connect the add_event signal to the eventController
     simulator.add_event.connect(eventContoller.add_event)
     simulator.start()

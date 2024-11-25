@@ -45,6 +45,7 @@ class EventsController(QObject):
         self.mapView.show_preloader()
         self.closestVolunteerView.show_preloader()
         self.eventsDetailView.update_label(event)
+        self.mapView.draw_map([], event)
 
         # Call the async function and wait for the result
         def show_map(eventVolunteers : List[EventVolunteer]):

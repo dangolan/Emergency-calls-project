@@ -29,4 +29,3 @@ class Worker(QObject):
         except Exception as e:
             # Emit an error signal with the exception message
             self.error_signal.emit(f"Exception: {str(e)}")
-            print(f"Exception: {str(e)}")

@@ -70,7 +70,7 @@ class EmergencyEventSimulator(QObject):
     def generate_random_coordinates_in_tel_aviv(self):
         # Define the Tel Aviv area with a more specific coordinate range
         latRange = (32.0500, 32.1200)  # Narrower latitude range for Tel Aviv
-        lonRange = (34.7600, 34.8200)  # Narrower longitude range for Tel Aviv
+        lonRange = (34.7733, 34.8200)  # Narrower longitude range for Tel Aviv
 
         return (
             random.uniform(latRange[0], latRange[1]),  # latitude

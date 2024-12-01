@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
     QSizePolicy,
 )
 from PySide6.QtCore import Signal, QSize
-from PySide6.QtGui import QIcon, QAction, QPixmap, Qt
+from PySide6.QtGui import QIcon, QPixmap, Qt
 
 
 # Define the ShellView class in its own view

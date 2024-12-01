@@ -11,8 +11,7 @@ from PySide6.QtWidgets import (
     QLineEdit,
 )
 from PySide6.QtGui import QIcon, QPixmap, QPainter, QPainterPath, QMovie
-from PySide6.QtCore import Qt, Signal, QSize
-import requests
+from PySide6.QtCore import Qt, Signal
 from entities.volunteer import Volunteer
 from PySide6.QtCore import QTimer
 from entities.listVolunteer import ListVolunteer
@@ -170,6 +169,7 @@ class VolunteersListView(QWidget):
 
     def set_volunteers(self, volunteers : List[ListVolunteer]):
         self.volunteers = volunteers
+        self.volunteerList.clear()
         for listVolunteer in volunteers:
             self.add_volunteer_to_list(listVolunteer.volunteer, listVolunteer.img)
 
@@ -227,30 +227,17 @@ class VolunteersListView(QWidget):
     def emit_add(self):
         self.addVolunteerClicked.emit()
     
-    def add_volunteer(self, volunteer: ListVolunteer):
+    def add_volunteer(self, volunteers: List[ListVolunteer]):
         self.show_notification("Volunteer added successfully")
-        self.volunteers.append(volunteer)
-        self.add_volunteer_to_list(volunteer.volunteer, volunteer.img)
-
-    def delete_volunteer(self, id):
+        self.set_volunteers(volunteers)        
+    
+    def delete_volunteer(self, volunteers : List[ListVolunteer]):
         self.show_notification("Volunteer deleted successfully")
-        self.volunteerList.clear()
-        for i in range(len(self.volunteers)):
-            if self.volunteers[i].volunteer.id == id:
-                self.volunteers.pop(i)
-                break
-        for volunteer in self.volunteers:
-            self.add_volunteer_to_list(volunteer.volunteer, volunteer.img)
-
-    def update_volunteer(self, volunteer: ListVolunteer):
+        self.set_volunteers(volunteers)
+        
+    def update_volunteer(self, volunteers: List[ListVolunteer]):
         self.show_notification("Volunteer updated successfully")
-        self.volunteerList.clear()
-        for i in range(len(self.volunteers)):
-            if self.volunteers[i].volunteer.id == volunteer.volunteer.id:
-                self.volunteers[i] = volunteer
-                break
-        for volunteer in self.volunteers:
-            self.add_volunteer_to_list(volunteer.volunteer, volunteer.img)
+        self.set_volunteers(volunteers)
 
     def load_stylesheet(self, filename):
         with open(filename, "r") as file:

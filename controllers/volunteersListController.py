@@ -1,5 +1,4 @@
 from PySide6.QtCore import QObject, Signal
-from PySide6.QtWidgets import QMessageBox
 from worker import Worker
 
 
@@ -39,7 +38,7 @@ class VolunteersListController(QObject):
     def remove_volunteer(self, volunteer):
         # Create a worker to call the async function
         worker = Worker(lambda: self.model.delete_volunteer(volunteer))
-        worker.result_signal.connect(self.volunteersListView.delete_volunteer(volunteer.id))
+        worker.result_signal.connect(self.volunteersListView.delete_volunteer)
         worker.error_signal.connect(self.error)
         worker.start()
         # Proceed to save the volunteer

@@ -1,7 +1,4 @@
-import sys
 from PySide6.QtWidgets import (
-    QApplication,
-    QMainWindow,
     QPushButton,
     QVBoxLayout,
     QWidget,
@@ -17,6 +14,7 @@ from entities.volunteer import Volunteer
 from PySide6.QtCore import Signal
 import re
 
+
 class AddVolunteerView(QWidget):
     saveVolunteerSignal = Signal(Volunteer)
 
@@ -28,7 +26,7 @@ class AddVolunteerView(QWidget):
         mainLayout = QVBoxLayout(self)
         # Form layout
         formLayout = QFormLayout()
-    
+
         # Add form fields
         self.uniqueIdNumberField = QLineEdit()
         self.firstNameField = QLineEdit()
@@ -84,12 +82,11 @@ class AddVolunteerView(QWidget):
         buttonLayout.addWidget(saveButton)
         mainLayout.addLayout(buttonLayout)
         saveButton.clicked.connect(self.save_volunteer)
-        #set volunter id
+        # set volunter id
         self.volunteerID = 0
 
         # set style sheet
         self.setStyleSheet(self.loadStyleSheet("views/styles/addVolunteer.qss"))
-
 
     def dragEnterEvent(self, event: QDragEnterEvent):
         if event.mimeData().hasUrls():
@@ -108,10 +105,10 @@ class AddVolunteerView(QWidget):
                 QMessageBox.warning(
                     self, "Invalid File", "Please drop a valid image file."
                 )
+
     def remove_img(self):
         # Explicitly clear the pixmap
         self.imageLabel.setPixmap(QPixmap())
-
         # Clear any text and reset the label
         self.imageLabel.clear()
         self.imageLabel.setText("Drag and drop an image here")
@@ -119,7 +116,6 @@ class AddVolunteerView(QWidget):
         self.imageLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.imageLabel.setFixedHeight(100)
         self.imageLabel.setToolTip("")  # Clear the tooltip
-
 
     def save_volunteer(self):
         image_path = self.imageLabel.toolTip() or ""
@@ -135,30 +131,44 @@ class AddVolunteerView(QWidget):
 
         # Input validation
         if not uniqueIdNumber.isdigit():
-            QMessageBox.critical(self, "Invalid Input", "Unique ID Number must contain only digits.")
+            QMessageBox.critical(
+                self, "Invalid Input", "Unique ID Number must contain only digits."
+            )
             return
 
         if not re.match("^[a-zA-Z]+$", firstName):
-            QMessageBox.critical(self, "Invalid Input", "First Name must contain only English letters.")
+            QMessageBox.critical(
+                self, "Invalid Input", "First Name must contain only English letters."
+            )
             return
 
         if not re.match("^[a-zA-Z]+$", lastName):
-            QMessageBox.critical(self, "Invalid Input", "Last Name must contain only English letters.")
+            QMessageBox.critical(
+                self, "Invalid Input", "Last Name must contain only English letters."
+            )
             return
 
         if not phone.isdigit():
-            QMessageBox.critical(self, "Invalid Input", "Phone number must contain only digits.")
+            QMessageBox.critical(
+                self, "Invalid Input", "Phone number must contain only digits."
+            )
             return
 
         if not re.match("^[א-ת\s]+$", city):
-            QMessageBox.critical(self, "Invalid Input", "City must contain only Hebrew letters.")
+            QMessageBox.critical(
+                self, "Invalid Input", "City must contain only Hebrew letters."
+            )
             return
 
         if not re.match("^[א-ת\s]+$", street):
-            QMessageBox.critical(self, "Invalid Input", "Street must contain only Hebrew letters.")
+            QMessageBox.critical(
+                self, "Invalid Input", "Street must contain only Hebrew letters."
+            )
             return
         if not houseNumber.isdigit():
-            QMessageBox.critical(self, "Invalid Input", "House number must contain only digits.")
+            QMessageBox.critical(
+                self, "Invalid Input", "House number must contain only digits."
+            )
             return
         if self.volunteerID == 0:
             if not image_path:
@@ -192,10 +202,9 @@ class AddVolunteerView(QWidget):
         self.city.clear()
         self.street.clear()
         self.houseNumber.clear()
-        self.remove_img()      
+        self.remove_img()
         self.volunteerID = 0
         self.close()
-
 
     def set_volunteer(self, volunteer):
         self.volunteerID = volunteer.id

@@ -26,6 +26,7 @@ class EventsController(QObject):
         self.mapView = mapView
         self.eventsModel = eventsModel
         self.eventsListView.showEventDetailsClicked.connect(self.create_map_and_get_volunteers)
+        self.eventsListView.removeEventClicked.connect(self.remove_event)
         self.mapView.draw_map([], None)
 
     def add_event(self, event : Event):
@@ -38,8 +39,13 @@ class EventsController(QObject):
             event.description,
             event.time,
         )
+        self.eventsModel.add_event(event)
         self.newEventsView.update_label(event)
-        self.eventsListView.add_custom_item(event)
+        self.eventsListView.set_events(self.eventsModel.get_events())
+    
+    def remove_event(self, event : Event):
+        self.eventsModel.remove_event(event.id)
+        self.eventsListView.set_events(self.eventsModel.get_events())
 
     def create_map_and_get_volunteers(self, event : Event):
         self.mapView.show_preloader()
@@ -49,6 +55,8 @@ class EventsController(QObject):
 
         # Call the async function and wait for the result
         def show_map(eventVolunteers : List[EventVolunteer]):
+            self.eventsModel.set_event_as_handled(event.id)
+            self.eventsListView.set_events(self.eventsModel.get_events())
             if eventVolunteers:
                 # Draw the map with the route
                 self.mapView.hide_preloader()

@@ -4,12 +4,14 @@ from entities.volunteer import Volunteer
 from io import BytesIO
 from PySide6.QtGui import QPixmap
 from entities.listVolunteer import ListVolunteer
+from typing import List
 
 
 class VolunteersModel:
     # volunteers model
     def __init__(self):
         pass
+        self.volunteers : List[ListVolunteer] = []
 
     # get all volunteers from server
     def get_all_volunteers(self):
@@ -20,7 +22,8 @@ class VolunteersModel:
             print(
                 f"Fetched {len(response_data)} volunteers from server."
             )  # Add this line
-            return self.parse_response_to_volunteers(response_data)
+            self.volunteers = self.parse_response_to_volunteers(response_data)
+            return self.volunteers
         else:
             print(f"Failed to get volunteers. Status code: {response.status_code}")
             raise Exception(
@@ -81,7 +84,9 @@ class VolunteersModel:
             # Handle the response
             if response.status_code == 201:
                 print("Volunteer added successfully:")
-                return self.parse_to_volunteer(response.json())
+                newVolunteer = self.parse_to_volunteer(response.json())
+                self.volunteers.append(newVolunteer)
+                return self.volunteers
             else:
                 raise Exception(
                     f"Failed to get volunteers. Status code: {response.status_code} - {response.text}"
@@ -122,7 +127,11 @@ class VolunteersModel:
             response = requests.put(url, data=volunteer_data)
         if response.status_code == 204:
             print(f"Updated volunteer with ID: {volunteer.id} successfully.")
-            return self.get_volunteer(volunteer.id)
+            updateVolunteer = self.get_volunteer(volunteer.id)
+            for i, v in enumerate(self.volunteers):
+                if v.volunteer.id == volunteer.id:
+                    self.volunteers[i] = updateVolunteer
+            return self.volunteers
         else:
             raise Exception(
                 f"Failed to update volunteer. Status code: {response.status_code} - {response.text}"
@@ -134,7 +143,10 @@ class VolunteersModel:
         response = requests.delete(url)
         if response.status_code == 204:
             print(f"Deleted volunteer with ID: {volunteer.id} successfully.")
-            return volunteer.id
+            for i, v in enumerate(self.volunteers):
+                if v.volunteer.id == volunteer.id:
+                    self.volunteers.pop(i)
+            return self.volunteers
         else:
             raise Exception(
                 f"Failed to delete volunteer. Status code: {response.status_code} - {response.text}"

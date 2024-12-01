@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from entities.event import Event
 from PySide6.QtCore import Signal
+from typing import List
 
 
 class EventListView(QWidget):
@@ -19,10 +20,6 @@ class EventListView(QWidget):
 
     def __init__(self):
         super().__init__()
-
-        # Event list data (e.g., store event names and details)
-        self.eventList = []
-
         # Initialize UI components
         self.init_ui()
 
@@ -62,7 +59,7 @@ class EventListView(QWidget):
         listItem = QListWidgetItem(self.listWidget)
 
         # Create a custom widget using the event instance
-        itemWidget = self.create_item_widget(event, listItem)
+        itemWidget = self.create_item_widget(event)
 
         # Set the size hint of the list item based on the custom widget size
         listItem.setSizeHint(itemWidget.sizeHint())
@@ -70,7 +67,7 @@ class EventListView(QWidget):
         # Add the custom widget to the QListWidget's item
         self.listWidget.setItemWidget(listItem, itemWidget)
 
-    def create_item_widget(self, event: Event, list_item: QListWidgetItem):
+    def create_item_widget(self, event: Event):
         # Create a custom widget to hold the item label and buttons
         itemWidget = QWidget()
         itemWidget.setObjectName("customItem")
@@ -109,16 +106,21 @@ class EventListView(QWidget):
         buttonLayout = QHBoxLayout()
 
         # Create the "Show" button
-        showButton = QPushButton("handle")
+        if event.status == "Handled":
+            showButton = QPushButton("Handled")
+            showButton.setText("Show again")
+            showButton.setStyleSheet("background-color: #03a109; width: 80px;")
+        else:
+            showButton = QPushButton("handle")
         showButton.clicked.connect(
-            lambda: self.show_item(event, showButton)
+            lambda: self.show_item(event)
         )  # Pass event to show_item
         showButton.setObjectName("showButton")
 
         # Create the "Remove" button
         removeButton = QPushButton("Remove")
         removeButton.clicked.connect(
-            lambda: self.remove_item(list_item, event)
+            lambda: self.remove_item(event)
         )  # Pass event to remove_item
         removeButton.setObjectName("removeButton")
 
@@ -137,15 +139,14 @@ class EventListView(QWidget):
 
         return itemWidget
 
-    def show_item(self, event: Event, show_button: QPushButton):
-        event.status = "Handled"
-        show_button.setText("Show again")
-        show_button.setStyleSheet("background-color: #03a109; width: 80px;")
+    def show_item(self, event: Event):
         self.showEventDetailsClicked.emit(event)
         self.showEventClicked.emit()
+    
+    def set_events(self, events : List[Event]):
+        self.listWidget.clear()
+        for event in events:
+            self.add_custom_item(event)
 
-    def remove_item(self, list_item, event: Event):
-        row = self.listWidget.row(list_item)
-        self.listWidget.takeItem(row)
-        print(f"Event '{event.description}' has been removed.")
+    def remove_item(self, event: Event):
         self.removeEventClicked.emit(event)

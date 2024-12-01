@@ -1,9 +1,6 @@
-import sys
 import io
-import base64
 import folium
-import requests
-from PySide6.QtWidgets import QApplication, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QVBoxLayout, QWidget
 from PySide6.QtWebEngineWidgets import QWebEngineView
 import random
 from PySide6.QtCore import Qt
@@ -53,9 +50,8 @@ class MapView(QWidget):
 
     # Draw the map with the event point and volunteer routes
     def draw_map(self, eventVolunteers : List[EventVolunteer], event: Event):
-
+        # If no event is provided, show a default map of Tel Aviv
         if not event:
-            print("No event to display on the map")
             m = folium.Map(location=[32.0853, 34.7818], zoom_start=10)
             data = io.BytesIO()
             m.save(data, close_file=False)
@@ -75,8 +71,8 @@ class MapView(QWidget):
             icon=folium.Icon(color='red')
         ).add_to(m)
 
+        # If no volunteers are provided, show the map with only the event point
         if not eventVolunteers:
-            print("No volunteers to display on the map")
             # Save the map to an HTML string and display it
             data = io.BytesIO()
             m.save(data, close_file=False)

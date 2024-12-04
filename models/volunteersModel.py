@@ -1,4 +1,3 @@
-from mimetypes import guess_type
 import requests
 from entities.volunteer import Volunteer
 from io import BytesIO

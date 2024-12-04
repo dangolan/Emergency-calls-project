@@ -4,7 +4,6 @@ from entities.eventVolunteer import EventVolunteer
 from typing import List
 from entities.event import Event
 
-
 class EventsModel:
     def __init__(self):
         self.events : List[Event] = []
